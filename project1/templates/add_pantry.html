@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Item | PantryPulse</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* ============================================================
+           GLOBAL
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('{{ url_for('static', filename='images/background.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: #1B2A1E;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.88);
+            z-index: 0;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        .add-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .add-header {
+            margin-bottom: 30px;
+        }
+
+        .add-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1B2A1E;
+            letter-spacing: -1px;
+        }
+
+        .add-header h1 span {
+            color: #2E7D32;
+            position: relative;
+        }
+
+        .add-header h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2E7D32, #4CAF50);
+            border-radius: 4px;
+        }
+
+        .add-header p {
+            color: #4A6A4A;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* ============================================================
+           FORM CARD
+           ============================================================ */
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .form-card:hover {
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-card .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1B2A1E;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(46, 125, 50, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-card .section-title i {
+            color: #2E7D32;
+            font-size: 18px;
+        }
+
+        /* ============================================================
+           FORM GROUPS
+           ============================================================ */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1B2A1E;
+            margin-bottom: 6px;
+        }
+
+        .form-group label i {
+            color: #2E7D32;
+            margin-right: 8px;
+            width: 18px;
+        }
+
+        .form-group label .required {
+            color: #C62828;
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1B2A1E;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2E7D32;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.08);
+            background: white;
+        }
+
+        .form-group input::placeholder {
+            color: #A0A0A0;
+        }
+
+        .form-group .input-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.2);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-cancel {
+            padding: 14px 28px;
+            background: #f5f5f5;
+            color: #4A6A4A;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-cancel:hover {
+            background: #e8e8e8;
+            color: #1B2A1E;
+        }
+
+        /* ============================================================
+           FLASH MESSAGES
+           ============================================================ */
+        .flash-message {
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.4s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .flash-message.success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border-left: 4px solid #2E7D32;
+        }
+
+        .flash-message.error {
+            background: #FFEBEE;
+            color: #C62828;
+            border-left: 4px solid #C62828;
+        }
+
+        .flash-message.warning {
+            background: #FFF3E0;
+            color: #E65100;
+            border-left: 4px solid #E65100;
+        }
+
+        .flash-message.info {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-left: 4px solid #0D47A1;
+        }
+
+        .flash-message .flash-icon {
+            font-size: 22px;
+        }
+
+        .flash-message .flash-close {
+            margin-left: auto;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            color: inherit;
+        }
+
+        .flash-message .flash-close:hover {
+            opacity: 1;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .form-card {
+                padding: 24px 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn-submit,
+            .btn-cancel {
+                width: 100%;
+            }
+
+            .add-header h1 {
+                font-size: 26px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .form-card {
+                padding: 18px 14px;
+            }
+
+            .add-header h1 {
+                font-size: 22px;
+            }
+
+            .form-group input,
+            .form-group select {
+                font-size: 13px;
+                padding: 10px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    {% include 'sidebar_nav.html' %}
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <div class="add-container">
+
+            <!-- ===== HEADER ===== -->
+            <div class="add-header">
+                <h1>➕ <span>Add Item</span></h1>
+                <p>Add a new item to your pantry inventory</p>
+            </div>
+
+            <!-- ===== FLASH MESSAGES ===== -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            <span class="flash-icon">
+                                {% if category == 'success' %}✅
+                                {% elif category == 'error' %}❌
+                                {% elif category == 'warning' %}⚠️
+                                {% else %}ℹ️{% endif %}
+                            </span>
+                            <span>{{ message }}</span>
+                            <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- ===== FORM ===== -->
+            <div class="form-card">
+                <form method="POST" action="{{ url_for('add_pantry') }}" id="addItemForm">
+                    
+                    <!-- ===== PRODUCT SELECTION ===== -->
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-tag"></i> Product <span class="required">*</span></label>
+                        <select name="product_id" id="product_id" onchange="toggleCustomProduct()">
+                            <option value="">-- Select a product --</option>
+                            {% for product in products %}
+                                <option value="{{ product[0] }}">{{ product[1] }}</option>
+                            {% endfor %}
+                            <option value="custom">➕ Add New Product</option>
+                        </select>
+                        <span class="input-hint">Select an existing product or add a new one</span>
+                    </div>
+
+                    <!-- ===== CUSTOM PRODUCT NAME ===== -->
+                    <div class="form-group" id="customProductGroup" style="display:none;">
+                        <label><i class="fa-solid fa-pen"></i> Custom Product Name <span class="required">*</span></label>
+                        <input type="text" name="custom_product_name" id="custom_product_name" placeholder="Enter product name (e.g., Organic Milk)">
+                        <span class="input-hint">This will be added to your product list</span>
+                    </div>
+
+                    <!-- ===== QUANTITY ===== -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-hashtag"></i> Quantity <span class="required">*</span></label>
+                            <input type="number" name="quantity" id="quantity" placeholder="1" value="1" min="1" required>
+                            <span class="input-hint">Number of items</span>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-calendar"></i> Purchase Date <span class="required">*</span></label>
+                            <input type="date" name="purchase_date" id="purchase_date" required>
+                            <span class="input-hint">When did you buy this?</span>
+                        </div>
+                    </div>
+
+                    <!-- ===== EXPIRY DATE ===== -->
+                    <div class="form-group">
+                        <label><i class="fa-regular fa-calendar"></i> Expiry Date <span class="required">*</span></label>
+                        <input type="date" name="expiry_date" id="expiry_date" required>
+                        <span class="input-hint">When does this item expire?</span>
+                    </div>
+
+                    <!-- ===== FORM ACTIONS ===== -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <i class="fa-solid fa-save"></i> Add to Pantry
+                        </button>
+                        <a href="{{ url_for('pantry') }}" class="btn-cancel">
+                            <i class="fa-solid fa-arrow-left"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ============================================================
+    SCRIPTS
+    ============================================================ -->
+    <script>
+        // ============================================================
+        // SET DEFAULT DATE
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            var today = new Date().toISOString().split('T')[0];
+            
+            var purchaseDate = document.getElementById('purchase_date');
+            if (purchaseDate) {
+                purchaseDate.value = today;
+            }
+            
+            var expiryDate = document.getElementById('expiry_date');
+            if (expiryDate) {
+                // Set default expiry date to 30 days from today
+                var expiry = new Date();
+                expiry.setDate(expiry.getDate() + 30);
+                expiryDate.value = expiry.toISOString().split('T')[0];
+            }
+            
+            // Set active nav
+            document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+                if (link.getAttribute('href') === window.location.pathname) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // ============================================================
+        // TOGGLE CUSTOM PRODUCT
+        // ============================================================
+        function toggleCustomProduct() {
+            var select = document.getElementById('product_id');
+            var customGroup = document.getElementById('customProductGroup');
+            var customInput = document.getElementById('custom_product_name');
+            
+            if (select.value === 'custom') {
+                customGroup.style.display = 'block';
+                customInput.required = true;
+                customInput.focus();
+            } else {
+                customGroup.style.display = 'none';
+                customInput.required = false;
+                customInput.value = '';
+            }
+        }
+
+        // ============================================================
+        // FORM VALIDATION
+        // ============================================================
+        document.getElementById('addItemForm').addEventListener('submit', function(e) {
+            var select = document.getElementById('product_id');
+            var customInput = document.getElementById('custom_product_name');
+            var quantity = document.getElementById('quantity');
+            var purchaseDate = document.getElementById('purchase_date');
+            var expiryDate = document.getElementById('expiry_date');
+            
+            // Validate product selection
+            if (select.value === 'custom') {
+                if (!customInput.value.trim()) {
+                    e.preventDefault();
+                    alert('⚠️ Please enter a product name!');
+                    customInput.focus();
+                    customInput.style.borderColor = '#C62828';
+                    return;
+                }
+            } else if (!select.value) {
+                e.preventDefault();
+                alert('⚠️ Please select a product!');
+                select.focus();
+                select.style.borderColor = '#C62828';
+                return;
+            }
+            
+            // Validate quantity
+            if (!quantity.value || parseInt(quantity.value) < 1) {
+                e.preventDefault();
+                alert('⚠️ Please enter a valid quantity (minimum 1)!');
+                quantity.focus();
+                quantity.style.borderColor = '#C62828';
+                return;
+            }
+            
+            // Validate purchase date
+            if (!purchaseDate.value) {
+                e.preventDefault();
+                alert('⚠️ Please select a purchase date!');
+                purchaseDate.focus();
+                purchaseDate.style.borderColor = '#C62828';
+                return;
+            }
+            
+            // Validate expiry date
+            if (!expiryDate.value) {
+                e.preventDefault();
+                alert('⚠️ Please select an expiry date!');
+                expiryDate.focus();
+                expiryDate.style.borderColor = '#C62828';
+                return;
+            }
+            
+            // Validate expiry date is after purchase date
+            var purchase = new Date(purchaseDate.value);
+            var expiry = new Date(expiryDate.value);
+            if (expiry <= purchase) {
+                e.preventDefault();
+                alert('⚠️ Expiry date must be after purchase date!');
+                expiryDate.focus();
+                expiryDate.style.borderColor = '#C62828';
+                return;
+            }
+            
+            // Show loading state
+            var btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+        });
+
+        // ============================================================
+        // CLEAR ERROR STYLES ON FOCUS
+        // ============================================================
+        document.querySelectorAll('#addItemForm input, #addItemForm select').forEach(function(el) {
+            el.addEventListener('focus', function() {
+                this.style.borderColor = '';
+            });
+        });
+
+        // ============================================================
+        // AUTO-HIDE FLASH MESSAGES
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            var flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(msg) {
+                setTimeout(function() {
+                    if (msg) {
+                        msg.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        msg.style.opacity = '0';
+                        msg.style.transform = 'translateY(-10px)';
+                        setTimeout(function() {
+                            if (msg.parentNode) {
+                                msg.remove();
+                            }
+                        }, 500);
+                    }
+                }, 5000);
+            });
+        });
+    </script>
+
+</body>
+</html>

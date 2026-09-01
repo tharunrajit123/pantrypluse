@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | PantryPulse</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-image: url('{{ url_for('static', filename='images/background.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.88);
+            z-index: 0;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        /* ===== PROFILE CONTAINER ===== */
+        .profile-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            margin-bottom: 30px;
+        }
+
+        .profile-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1B2A1E;
+        }
+
+        .profile-header h1 span {
+            color: #2E7D32;
+        }
+
+        .profile-header p {
+            color: #4A6A4A;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* ===== PROFILE CARD ===== */
+        .profile-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .profile-card .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1B2A1E;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(46, 125, 50, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-card .section-title i {
+            color: #2E7D32;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .profile-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .profile-field label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4A6A4A;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-field .field-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1B2A1E;
+            padding: 10px 14px;
+            background: #F5F9F5;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .profile-field .field-value i {
+            color: #2E7D32;
+            margin-right: 8px;
+        }
+
+        /* ===== SUPPORT SECTION ===== */
+        .support-box {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            border-radius: 16px;
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid rgba(46, 125, 50, 0.15);
+        }
+
+        .support-box .support-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .support-box .support-info .support-icon {
+            width: 50px;
+            height: 50px;
+            background: #2E7D32;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .support-box .support-info .support-text h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1B2A1E;
+        }
+
+        .support-box .support-info .support-text p {
+            font-size: 13px;
+            color: #4A6A4A;
+        }
+
+        .support-box .support-phone {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2E7D32;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(46, 125, 50, 0.1);
+        }
+
+        .support-box .support-phone i {
+            font-size: 22px;
+        }
+
+        /* ===== STATS SECTION ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .stats-grid .stat-item {
+            background: #F5F9F5;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .stats-grid .stat-item .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2E7D32;
+        }
+
+        .stats-grid .stat-item .stat-label {
+            font-size: 12px;
+            color: #4A6A4A;
+            font-weight: 600;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== FORM FIELDS ===== */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1B2A1E;
+            margin-bottom: 6px;
+        }
+
+        .form-group label i {
+            color: #2E7D32;
+            margin-right: 8px;
+            width: 18px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-group input:focus {
+            border-color: #2E7D32;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.1);
+            background: white;
+        }
+
+        .form-group input::placeholder {
+            color: #A0A0A0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-update {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-update:active {
+            transform: translateY(0);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== FLASH MESSAGES ===== */
+        .flash-message {
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            animation: slideDown 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .flash-message.success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border-left: 4px solid #2E7D32;
+        }
+
+        .flash-message.error {
+            background: #FFEBEE;
+            color: #C62828;
+            border-left: 4px solid #C62828;
+        }
+
+        .flash-message.warning {
+            background: #FFF3E0;
+            color: #E65100;
+            border-left: 4px solid #E65100;
+        }
+
+        .flash-message.info {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-left: 4px solid #0D47A1;
+        }
+
+        .flash-message .flash-icon {
+            font-size: 22px;
+        }
+
+        .flash-message .flash-close {
+            margin-left: auto;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            color: inherit;
+        }
+
+        .flash-message .flash-close:hover {
+            opacity: 1;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .profile-card {
+                padding: 25px 20px;
+            }
+            
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .support-box {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .support-box .support-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-header h1 {
+                font-size: 26px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+            
+            .profile-card {
+                padding: 20px 15px;
+            }
+            
+            .support-box .support-phone {
+                font-size: 16px;
+                padding: 8px 16px;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    {% include 'sidebar_nav.html' %}
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <div class="profile-container">
+
+            <!-- ===== HEADER ===== -->
+            <div class="profile-header">
+                <h1>👤 My <span>Profile</span> Settings</h1>
+                <p>Personal Details & Credentials</p>
+            </div>
+
+            <!-- ===== FLASH MESSAGES ===== -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            <span class="flash-icon">
+                                {% if category == 'success' %}✅
+                                {% elif category == 'error' %}❌
+                                {% elif category == 'warning' %}⚠️
+                                {% else %}ℹ️{% endif %}
+                            </span>
+                            <span>{{ message }}</span>
+                            <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- ===== PERSONAL DETAILS ===== -->
+            <div class="profile-card">
+                <div class="section-title">
+                    <i class="fa-regular fa-user"></i> Personal Details
+                </div>
+                <div class="profile-grid">
+                    <div class="profile-field">
+                        <label>Full Name</label>
+                        <div class="field-value">
+                            <i class="fa-regular fa-user"></i> {{ user[0] if user else 'Not Set' }}
+                        </div>
+                    </div>
+                    <div class="profile-field">
+                        <label>Email Address</label>
+                        <div class="field-value">
+                            <i class="fa-regular fa-envelope"></i> {{ user[1] if user else 'Not Set' }}
+                        </div>
+                    </div>
+                    <div class="profile-field">
+                        <label>Phone Number</label>
+                        <div class="field-value">
+                            <i class="fa-regular fa-phone"></i> +91 8122971939
+                        </div>
+                    </div>
+                    <div class="profile-field">
+                        <label>Member Since</label>
+                        <div class="field-value">
+                            <i class="fa-regular fa-calendar"></i> 2024
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PANTRY STATS ===== -->
+            <div class="profile-card">
+                <div class="section-title">
+                    <i class="fa-regular fa-chart-simple"></i> Pantry Statistics
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">{{ pantry_count }}</div>
+                        <div class="stat-label">Items in Pantry</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ total_purchases }}</div>
+                        <div class="stat-label">Total Purchases</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">₹{{ total_spent|round(2) }}</div>
+                        <div class="stat-label">Total Spent</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SUPPORT SECTION ===== -->
+            <div class="profile-card">
+                <div class="section-title">
+                    <i class="fa-regular fa-headset"></i> Direct Customer Support
+                </div>
+                <div class="support-box">
+                    <div class="support-info">
+                        <div class="support-icon">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <div class="support-text">
+                            <h3>24/7 Telephone Hotline</h3>
+                            <p>If you require help or assistance with your digital smart payment configuration, order logistics, or accounts syncing, dial our hotline anytime.</p>
+                        </div>
+                    </div>
+                    <div class="support-phone">
+                        <i class="fa-solid fa-phone"></i> +91 8122971939
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== UPDATE PROFILE ===== -->
+            <div class="profile-card">
+                <div class="section-title">
+                    <i class="fa-regular fa-pen-to-square"></i> Update Profile
+                </div>
+                <form method="POST" action="{{ url_for('update_profile') }}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fa-regular fa-user"></i> Full Name</label>
+                            <input type="text" name="fullname" value="{{ user[0] if user else '' }}" placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa-regular fa-envelope"></i> Email Address</label>
+                            <input type="email" name="email" value="{{ user[1] if user else '' }}" placeholder="Enter your email">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-update">
+                            <i class="fa-regular fa-floppy-disk"></i> Update Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ===== UPDATE PASSWORD ===== -->
+            <div class="profile-card">
+                <div class="section-title">
+                    <i class="fa-regular fa-lock"></i> Update Password (Optional)
+                </div>
+                <form method="POST" action="{{ url_for('update_password') }}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fa-regular fa-lock"></i> Current Password</label>
+                            <input type="password" name="current_password" placeholder="Enter current password">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa-regular fa-lock"></i> New Password</label>
+                            <input type="password" name="new_password" placeholder="Enter new password">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-update">
+                            <i class="fa-regular fa-key"></i> Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-hide flash messages after 5 seconds
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(msg) {
+                setTimeout(function() {
+                    msg.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    msg.style.opacity = '0';
+                    msg.style.transform = 'translateY(-10px)';
+                    setTimeout(function() {
+                        if (msg.parentNode) {
+                            msg.remove();
+                        }
+                    }, 500);
+                }, 5000);
+            });
+
+            // Navigation active state
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+            for (var i = 0; i < navLinks.length; i++) {
+                if (navLinks[i].getAttribute('href') === window.location.pathname) {
+                    navLinks[i].classList.add('active');
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

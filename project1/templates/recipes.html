@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipes | PantryPulse</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* ============================================================
+           GLOBAL
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('{{ url_for('static', filename='images/background.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: #1B2A1E;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.88);
+            z-index: 0;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        .recipes-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .recipes-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .recipes-header .header-left h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1B2A1E;
+            letter-spacing: -1px;
+        }
+
+        .recipes-header .header-left h1 span {
+            color: #2E7D32;
+            position: relative;
+        }
+
+        .recipes-header .header-left h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2E7D32, #4CAF50);
+            border-radius: 4px;
+        }
+
+        .recipes-header .header-left p {
+            color: #4A6A4A;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .recipes-header .header-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .recipes-header .header-right .recipe-count {
+            padding: 8px 20px;
+            background: rgba(46, 125, 50, 0.1);
+            border: 1px solid rgba(46, 125, 50, 0.2);
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #2E7D32;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ============================================================
+           SEARCH BOX
+           ============================================================ */
+        .search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid rgba(0, 0, 0, 0.06);
+            border-radius: 14px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .search-box input:focus {
+            border-color: #2E7D32;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.08), 0 4px 16px rgba(46, 125, 50, 0.05);
+            background: white;
+        }
+
+        .search-box input::placeholder {
+            color: #A0A0A0;
+        }
+
+        .search-box .btn-search {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.2);
+        }
+
+        .search-box .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(46, 125, 50, 0.3);
+        }
+
+        /* ============================================================
+           PANTRY BADGES
+           ============================================================ */
+        .pantry-badges {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+        }
+
+        .pantry-badges .badge-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1B2A1E;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 4px;
+        }
+
+        .pantry-badges .badge-label i {
+            color: #2E7D32;
+            font-size: 16px;
+        }
+
+        .pantry-badges .badge-item {
+            padding: 6px 16px;
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            color: #2E7D32;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(46, 125, 50, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .pantry-badges .badge-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+        }
+
+        .pantry-badges .badge-item i {
+            font-size: 10px;
+        }
+
+        .pantry-badges .badge-empty {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .pantry-badges .badge-empty a {
+            color: #2E7D32;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .pantry-badges .badge-empty a:hover {
+            text-decoration: underline;
+        }
+
+        /* ============================================================
+           FILTER TABS - WITH COUNTS
+           ============================================================ */
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            padding: 6px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .filter-tabs .filter-tab {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4A6A4A;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .filter-tabs .filter-tab:hover {
+            background: rgba(46, 125, 50, 0.08);
+            color: #2E7D32;
+        }
+
+        .filter-tabs .filter-tab.active {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.25);
+        }
+
+        .filter-tabs .filter-tab .count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .filter-tabs .filter-tab.active .count {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .filter-tabs .filter-tab .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .filter-tabs .filter-tab .dot.green { background: #2E7D32; }
+        .filter-tabs .filter-tab .dot.orange { background: #F57C00; }
+        .filter-tabs .filter-tab .dot.red { background: #C62828; }
+
+        /* ============================================================
+           RECIPES GRID
+           ============================================================ */
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .recipe-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recipe-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2E7D32, #4CAF50, #FF6B35);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .recipe-card:hover::before {
+            opacity: 1;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.08);
+            border-color: rgba(46, 125, 50, 0.1);
+        }
+
+        .recipe-card .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .recipe-card .recipe-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #F5F9F5;
+            color: #4A6A4A;
+        }
+
+        .recipe-card .recipe-badge .dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        .recipe-card .recipe-badge .dot.green { background: #2E7D32; }
+        .recipe-card .recipe-badge .dot.orange { background: #F57C00; }
+        .recipe-card .recipe-badge .dot.red { background: #C62828; }
+
+        .recipe-card .match-score {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(46, 125, 50, 0.08);
+            padding: 4px 14px;
+            border-radius: 30px;
+        }
+
+        .recipe-card .match-score .score-number {
+            font-size: 16px;
+            font-weight: 800;
+            color: #2E7D32;
+        }
+
+        .recipe-card .match-score .score-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #4A6A4A;
+        }
+
+        .recipe-card .recipe-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1B2A1E;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .recipe-card .recipe-title i {
+            color: #FF6B35;
+            margin-right: 8px;
+        }
+
+        .recipe-card .recipe-desc {
+            font-size: 13px;
+            color: #4A6A4A;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .recipe-card .recipe-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .recipe-card .recipe-meta .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #4A6A4A;
+            background: #F5F9F5;
+            padding: 4px 14px;
+            border-radius: 30px;
+            transition: all 0.2s;
+        }
+
+        .recipe-card .recipe-meta .meta-item i {
+            color: #2E7D32;
+            font-size: 12px;
+        }
+
+        .recipe-card .recipe-meta .meta-item .difficulty.easy { color: #2E7D32; }
+        .recipe-card .recipe-meta .meta-item .difficulty.medium { color: #F57C00; }
+        .recipe-card .recipe-meta .meta-item .difficulty.hard { color: #C62828; }
+
+        .recipe-card .ing-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 14px;
+        }
+
+        .recipe-card .ing-preview .ing-tag {
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .recipe-card .ing-preview .ing-tag.available {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .recipe-card .ing-preview .ing-tag.missing {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .recipe-card .ing-preview .ing-tag.more {
+            background: #F5F9F5;
+            color: #4A6A4A;
+        }
+
+        .recipe-card .recipe-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 14px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .recipe-card .recipe-footer .match-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recipe-card .recipe-footer .match-info .match-number {
+            font-size: 18px;
+            font-weight: 800;
+            color: #2E7D32;
+        }
+
+        .recipe-card .recipe-footer .match-info .match-label {
+            font-size: 11px;
+            color: #4A6A4A;
+        }
+
+        .recipe-card .recipe-footer .match-info .match-detail {
+            font-size: 11px;
+            color: #A0A0A0;
+        }
+
+        .recipe-card .recipe-footer .btn-view {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 12px rgba(46, 125, 50, 0.15);
+        }
+
+        .recipe-card .recipe-footer .btn-view:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(46, 125, 50, 0.3);
+        }
+
+        .recipe-card .recipe-footer .btn-view i {
+            font-size: 12px;
+        }
+
+        /* ============================================================
+           EMPTY STATE
+           ============================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 72px;
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+
+        .empty-state h2 {
+            font-size: 26px;
+            color: #1B2A1E;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: #4A6A4A;
+            font-size: 15px;
+            margin-bottom: 24px;
+        }
+
+        .empty-state .empty-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .empty-state .empty-actions .btn-primary {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.2);
+        }
+
+        .empty-state .empty-actions .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(46, 125, 50, 0.3);
+        }
+
+        .empty-state .empty-actions .btn-secondary {
+            padding: 12px 32px;
+            background: #FF6B35;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(255, 107, 53, 0.2);
+        }
+
+        .empty-state .empty-actions .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(255, 107, 53, 0.3);
+        }
+
+        /* ============================================================
+           RECIPE MODAL
+           ============================================================ */
+        .recipe-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .recipe-modal-overlay.show { display: flex; }
+        
+        .recipe-modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 750px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes modalSlideUp {
+            from { transform: translateY(40px) scale(0.96); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .recipe-modal-content .modal-close {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #4A6A4A;
+            transition: all 0.3s;
+            padding: 0 8px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .recipe-modal-content .modal-close:hover {
+            color: #C62828;
+            background: #FFEBEE;
+            transform: rotate(90deg);
+        }
+
+        .recipe-modal-content .modal-icon {
+            font-size: 48px;
+            margin-bottom: 4px;
+        }
+
+        .recipe-modal-content .modal-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1B2A1E;
+            margin-bottom: 4px;
+        }
+
+        .recipe-modal-content .modal-sub {
+            font-size: 14px;
+            color: #4A6A4A;
+            margin-bottom: 16px;
+        }
+
+        .recipe-modal-content .modal-sub strong {
+            color: #2E7D32;
+        }
+
+        .recipe-modal-content .modal-desc {
+            padding: 18px 24px;
+            background: #F5F9F5;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2E7D32;
+            font-size: 14px;
+            color: #4A6A4A;
+            line-height: 1.7;
+        }
+
+        .recipe-modal-content .modal-desc i {
+            color: #2E7D32;
+            margin-right: 8px;
+        }
+
+        .recipe-modal-content .modal-meta {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .recipe-modal-content .modal-meta .meta-item {
+            text-align: center;
+            padding: 14px 12px;
+            background: #F5F9F5;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+
+        .recipe-modal-content .modal-meta .meta-item .meta-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1B2A1E;
+        }
+
+        .recipe-modal-content .modal-meta .meta-item .meta-label {
+            font-size: 11px;
+            color: #4A6A4A;
+            margin-top: 2px;
+        }
+
+        .recipe-modal-content .modal-meta .meta-item .meta-value.easy { color: #2E7D32; }
+        .recipe-modal-content .modal-meta .meta-item .meta-value.medium { color: #F57C00; }
+        .recipe-modal-content .modal-meta .meta-item .meta-value.hard { color: #C62828; }
+
+        .recipe-modal-content .section-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1B2A1E;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recipe-modal-content .section-label i {
+            color: #2E7D32;
+            font-size: 18px;
+        }
+
+        .recipe-modal-content .section-label .count {
+            margin-left: auto;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4A6A4A;
+            background: #F5F9F5;
+            padding: 2px 16px;
+            border-radius: 30px;
+        }
+
+        .recipe-modal-content .step-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 10px;
+            padding: 14px 18px;
+            background: #FAFCFA;
+            border-radius: 12px;
+            border-left: 3px solid #2E7D32;
+            transition: all 0.2s;
+        }
+
+        .recipe-modal-content .step-item:hover {
+            background: #F0F5F0;
+            transform: translateX(4px);
+        }
+
+        .recipe-modal-content .step-item .step-number {
+            font-weight: 700;
+            color: #2E7D32;
+            min-width: 30px;
+            font-size: 14px;
+        }
+
+        .recipe-modal-content .step-item .step-text {
+            color: #1B2A1E;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .modal-ingredients-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .modal-ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: #F5F9F5;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            transition: all 0.2s;
+        }
+
+        .modal-ingredient-item:hover {
+            border-color: rgba(46, 125, 50, 0.1);
+        }
+
+        .modal-ingredient-item .ing-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1B2A1E;
+        }
+
+        .modal-ingredient-item .ing-status {
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .modal-ingredient-item .ing-status.available { color: #2E7D32; }
+        .modal-ingredient-item .ing-status.missing { color: #C62828; }
+
+        .missing-items-list {
+            padding: 18px 24px;
+            background: #FFF8E1;
+            border-radius: 14px;
+            border-left: 4px solid #F57C00;
+        }
+
+        .missing-items-list .missing-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #E65100;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .missing-items-list .missing-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            font-size: 13px;
+        }
+
+        .missing-items-list .missing-item:last-child { border-bottom: none; }
+        .missing-items-list .missing-item .missing-name { color: #1B2A1E; }
+        .missing-items-list .missing-item .missing-qty { color: #C62828; font-weight: 600; }
+
+        .recipe-modal-content .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .recipe-modal-content .modal-actions .btn-close-modal {
+            padding: 10px 36px;
+            background: #f5f5f5;
+            color: #4A6A4A;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .recipe-modal-content .modal-actions .btn-close-modal:hover {
+            background: #e8e8e8;
+        }
+
+        .recipe-modal-content .modal-actions .btn-shopping-list {
+            padding: 10px 36px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.2);
+        }
+
+        .recipe-modal-content .modal-actions .btn-shopping-list:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 28px rgba(46, 125, 50, 0.3);
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 1024px) {
+            .recipe-modal-content .modal-meta {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .recipes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .recipes-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .recipes-header .header-right {
+                width: 100%;
+            }
+
+            .recipes-header .header-right .recipe-count {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .pantry-badges {
+                padding: 14px 16px;
+            }
+
+            .pantry-badges .badge-label {
+                width: 100%;
+            }
+
+            .filter-tabs {
+                gap: 6px;
+                padding: 4px;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+
+            .filter-tabs .filter-tab {
+                padding: 8px 16px;
+                font-size: 12px;
+                white-space: nowrap;
+            }
+
+            .recipe-card {
+                padding: 20px;
+            }
+
+            .recipe-card .recipe-footer {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+
+            .recipe-card .recipe-footer .btn-view {
+                justify-content: center;
+            }
+
+            .recipe-modal-content {
+                padding: 24px;
+            }
+
+            .recipe-modal-content .modal-title {
+                font-size: 22px;
+            }
+
+            .recipe-modal-content .modal-meta {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .modal-ingredients-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .recipe-modal-content .modal-actions {
+                flex-direction: column;
+            }
+
+            .recipe-modal-content .modal-actions .btn-close-modal,
+            .recipe-modal-content .modal-actions .btn-shopping-list {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .recipes-header .header-left h1 {
+                font-size: 24px;
+            }
+
+            .recipe-card {
+                padding: 16px;
+            }
+
+            .recipe-card .recipe-title {
+                font-size: 16px;
+            }
+
+            .recipe-card .recipe-meta .meta-item {
+                font-size: 10px;
+                padding: 3px 10px;
+            }
+
+            .recipe-card .ing-preview .ing-tag {
+                font-size: 9px;
+                padding: 1px 8px;
+            }
+
+            .recipe-card .recipe-footer .match-info .match-number {
+                font-size: 16px;
+            }
+
+            .recipe-modal-content {
+                padding: 18px;
+            }
+
+            .recipe-modal-content .modal-title {
+                font-size: 20px;
+            }
+
+            .recipe-modal-content .modal-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .recipe-modal-content .modal-desc {
+                padding: 14px 16px;
+            }
+
+            .filter-tabs {
+                gap: 4px;
+            }
+
+            .filter-tabs .filter-tab {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+
+            .empty-state {
+                padding: 40px 16px;
+            }
+
+            .empty-state .empty-icon {
+                font-size: 48px;
+            }
+
+            .empty-state h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    {% include 'sidebar_nav.html' %}
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <div class="recipes-container">
+
+            <!-- ===== HEADER ===== -->
+            <div class="recipes-header">
+                <div class="header-left">
+                    <h1>🍳 <span>Recipes</span></h1>
+                    <p>Discover delicious recipes based on what's in your pantry</p>
+                </div>
+                <div class="header-right">
+                    <span class="recipe-count">
+                        <i class="fa-solid fa-utensils"></i>
+                        <span id="totalRecipeCount">{{ suggestions|length if suggestions else 0 }}</span> Recipes
+                    </span>
+                </div>
+            </div>
+
+            <!-- ===== PANTRY BADGES ===== -->
+            <div class="pantry-badges">
+                <span class="badge-label"><i class="fa-solid fa-box"></i> Your Pantry Items:</span>
+                {% if pantry_items %}
+                    {% for item in pantry_items %}
+                        <span class="badge-item"><i class="fa-solid fa-circle-check"></i> {{ item|title }}</span>
+                    {% endfor %}
+                {% else %}
+                    <span class="badge-empty">
+                        <i class="fa-regular fa-circle-xmark"></i> No items in pantry.
+                        <a href="{{ url_for('pantry') }}">Add items first!</a>
+                    </span>
+                {% endif %}
+            </div>
+
+            <!-- ===== SEARCH ===== -->
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search recipes by name or ingredient..." onkeyup="filterRecipes()">
+                <button class="btn-search" onclick="filterRecipes()">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search
+                </button>
+            </div>
+
+            <!-- ===== FILTER TABS - WITH COUNTS ===== -->
+            <div class="filter-tabs" id="filterTabs">
+                <button class="filter-tab active" data-filter="all" onclick="setFilter('all', this)">
+                    <i class="fa-solid fa-th-list"></i> All Recipes
+                    <span class="count" id="countAll">{{ suggestions|length if suggestions else 0 }}</span>
+                </button>
+                <button class="filter-tab" data-filter="high" onclick="setFilter('high', this)">
+                    <span class="dot green"></span> High Match (80%+)
+                    <span class="count" id="countHigh">0</span>
+                </button>
+                <button class="filter-tab" data-filter="medium" onclick="setFilter('medium', this)">
+                    <span class="dot orange"></span> Medium Match (50-79%)
+                    <span class="count" id="countMedium">0</span>
+                </button>
+                <button class="filter-tab" data-filter="low" onclick="setFilter('low', this)">
+                    <span class="dot red"></span> Low Match (Below 50%)
+                    <span class="count" id="countLow">0</span>
+                </button>
+            </div>
+
+            <!-- ===== RECIPES GRID ===== -->
+            {% if suggestions %}
+            <div class="recipes-grid" id="recipesGrid">
+                {% for recipe in suggestions %}
+                <div class="recipe-card" data-match="{{ recipe.match_percent }}" data-name="{{ recipe.recipe_name|lower }}">
+                    <div class="card-top">
+                        <span class="recipe-badge">
+                            <span class="dot 
+                                {% if recipe.match_percent >= 80 %}green
+                                {% elif recipe.match_percent >= 50 %}orange
+                                {% else %}red{% endif %}"></span>
+                            {{ recipe.cuisine if recipe.cuisine else 'Indian' }}
+                        </span>
+                        <span class="match-score">
+                            <span class="score-number">{{ recipe.match_percent }}%</span>
+                            <span class="score-label">Match</span>
+                        </span>
+                    </div>
+
+                    <div class="recipe-title">
+                        <i class="fa-solid fa-utensils"></i> {{ recipe.recipe_name }}
+                    </div>
+
+                    <div class="recipe-desc">
+                        {{ recipe.description if recipe.description else 'A delicious meal crafted from your pantry items.' }}
+                    </div>
+
+                    <div class="recipe-meta">
+                        <span class="meta-item">
+                            <i class="fa-regular fa-clock"></i> {{ recipe.cooking_time if recipe.cooking_time else '20-30 mins' }}
+                        </span>
+                        <span class="meta-item">
+                            <i class="fa-regular fa-fire"></i> {{ recipe.calories if recipe.calories else '250' }} kcal
+                        </span>
+                        <span class="meta-item">
+                            <i class="fa-regular fa-signal"></i>
+                            <span class="difficulty {% if recipe.difficulty == 'Easy' %}easy{% elif recipe.difficulty == 'Medium' %}medium{% else %}hard{% endif %}">
+                                {{ recipe.difficulty if recipe.difficulty else 'Easy' }}
+                            </span>
+                        </span>
+                        <span class="meta-item">
+                            <i class="fa-regular fa-utensils"></i> {{ recipe.servings if recipe.servings else 2 }}
+                        </span>
+                    </div>
+
+                    <div class="ing-preview">
+                        {% set ingredients = recipe.ingredients.split(',') %}
+                        {% for ing in ingredients[:3] %}
+                            {% set ing_clean = ing.strip() %}
+                            {% if ing_clean.lower() in pantry_items %}
+                                <span class="ing-tag available">{{ ing_clean|title }}</span>
+                            {% else %}
+                                <span class="ing-tag missing">{{ ing_clean|title }}</span>
+                            {% endif %}
+                        {% endfor %}
+                        {% if ingredients|length > 3 %}
+                            <span class="ing-tag more">+{{ ingredients|length - 3 }} more</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="recipe-footer">
+                        <div class="match-info">
+                            <span class="match-number">{{ recipe.match_percent }}%</span>
+                            <span class="match-label">Match</span>
+                            <span class="match-detail">({{ recipe.available }}/{{ recipe.total }})</span>
+                        </div>
+                        <button class="btn-view" onclick="viewRecipe({{ recipe.id }})">
+                            <i class="fa-regular fa-eye"></i> View Recipe
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- ===== EMPTY STATE ===== -->
+            <div class="empty-state">
+                <div class="empty-icon">🍳</div>
+                <h2>No Recipes Found</h2>
+                <p>
+                    {% if pantry_items %}
+                        We couldn't find any recipes matching your pantry items.
+                        Try adding more items to your pantry!
+                    {% else %}
+                        Your pantry is empty. Add items to discover recipes!
+                    {% endif %}
+                </p>
+                <div class="empty-actions">
+                    <a href="{{ url_for('pantry') }}" class="btn-primary">
+                        <i class="fa-solid fa-boxes-stacked"></i> Go to Pantry
+                    </a>
+                    <a href="{{ url_for('purchase') }}" class="btn-secondary">
+                        <i class="fa-solid fa-plus"></i> Add Items
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- ===== RECIPE MODAL ===== -->
+    <div class="recipe-modal-overlay" id="recipeModal">
+        <div class="recipe-modal-content">
+            <button class="modal-close" onclick="closeRecipeModal()">&times;</button>
+            
+            <div class="modal-header">
+                <div class="modal-icon">🍳</div>
+                <div class="modal-title" id="modalTitle">Recipe Name</div>
+                <div class="modal-sub">
+                    Primary: <strong id="modalPrimary">-</strong> ·
+                    Cuisine: <span id="modalCuisine">-</span> ·
+                    Servings: <span id="modalServings">-</span>
+                </div>
+            </div>
+
+            <div class="modal-desc">
+                <i class="fa-solid fa-quote-left"></i> <span id="modalDescText">Recipe description</span>
+            </div>
+
+            <div class="modal-meta">
+                <div class="meta-item">
+                    <div class="meta-value" id="modalTime"><i class="fa-regular fa-clock"></i> -</div>
+                    <div class="meta-label">Cooking Time</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-value easy" id="modalDifficulty"><i class="fa-regular fa-signal"></i> -</div>
+                    <div class="meta-label">Difficulty</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-value" id="modalCalories"><i class="fa-regular fa-fire"></i> -</div>
+                    <div class="meta-label">Calories</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-value" id="modalMatch"><i class="fa-regular fa-circle-check"></i> -</div>
+                    <div class="meta-label">Pantry Match</div>
+                </div>
+            </div>
+
+            <div class="section-label">
+                <i class="fa-regular fa-rectangle-list"></i> Step-by-Step Cooking Guide
+                <span class="count" id="stepCount">0 steps</span>
+            </div>
+            <div id="modalInstructions"></div>
+
+            <div class="section-label" style="margin-top:20px;">
+                <i class="fa-regular fa-list"></i> Required Recipe Ingredients
+                <span class="count" id="ingCount">0 products</span>
+            </div>
+            <div class="modal-ingredients-grid" id="modalIngredientsGrid"></div>
+
+            <div class="missing-items-list" id="missingItemsList">
+                <div class="missing-title">
+                    <i class="fa-solid fa-circle-exclamation"></i> Items Needed to Buy
+                    (<span id="missingCount">0</span>)
+                </div>
+                <div id="missingItemsContainer"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-close-modal" onclick="closeRecipeModal()">
+                    <i class="fa-solid fa-times"></i> Close
+                </button>
+                <button class="btn-shopping-list" onclick="addToShoppingList()">
+                    <i class="fa-solid fa-cart-plus"></i> Add Missing Items
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    SCRIPTS
+    ============================================================ -->
+    <script>
+        // ============================================================
+        // DATA
+        // ============================================================
+        var recipes = {{ suggestions|tojson|safe }};
+        var pantryItems = {{ pantry_items|tojson|safe }};
+        var currentMissingItems = [];
+
+        // ============================================================
+        // UPDATE FILTER COUNTS
+        // ============================================================
+        function updateFilterCounts() {
+            var cards = document.querySelectorAll('.recipe-card');
+            var totalVisible = 0;
+            var highCount = 0;
+            var mediumCount = 0;
+            var lowCount = 0;
+
+            cards.forEach(function(card) {
+                if (card.style.display !== 'none') {
+                    totalVisible++;
+                    var match = parseInt(card.dataset.match) || 0;
+                    if (match >= 80) highCount++;
+                    else if (match >= 50) mediumCount++;
+                    else lowCount++;
+                }
+            });
+
+            document.getElementById('countAll').textContent = totalVisible;
+            document.getElementById('countHigh').textContent = highCount;
+            document.getElementById('countMedium').textContent = mediumCount;
+            document.getElementById('countLow').textContent = lowCount;
+            document.getElementById('totalRecipeCount').textContent = totalVisible;
+        }
+
+        // ============================================================
+        // SEARCH & FILTER
+        // ============================================================
+        function filterRecipes() {
+            var filter = document.getElementById('searchInput').value.toLowerCase();
+            var currentFilter = document.querySelector('.filter-tab.active')?.dataset?.filter || 'all';
+            var cards = document.querySelectorAll('.recipe-card');
+
+            cards.forEach(function(card) {
+                var name = card.dataset.name || '';
+                var match = parseInt(card.dataset.match) || 0;
+
+                // Match filter
+                var matchFilter = true;
+                if (currentFilter === 'high') matchFilter = match >= 80;
+                else if (currentFilter === 'medium') matchFilter = match >= 50 && match < 80;
+                else if (currentFilter === 'low') matchFilter = match < 50;
+
+                // Search filter
+                var searchMatch = name.includes(filter);
+
+                if (searchMatch && matchFilter) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Update counts after filtering
+            updateFilterCounts();
+        }
+
+        // ============================================================
+        // SET FILTER
+        // ============================================================
+        function setFilter(filter, btn) {
+            document.querySelectorAll('.filter-tab').forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+            btn.classList.add('active');
+            filterRecipes();
+        }
+
+        // ============================================================
+        // VIEW RECIPE
+        // ============================================================
+        function viewRecipe(id) {
+            var recipe = recipes.find(function(r) { return r.id == id; });
+            if (!recipe) { alert('Recipe not found!'); return; }
+
+            document.getElementById('modalTitle').textContent = recipe.recipe_name;
+            document.getElementById('modalPrimary').textContent = recipe.primary_ingredient || recipe.recipe_name.split(' ')[0];
+            document.getElementById('modalCuisine').textContent = recipe.cuisine || 'Indian';
+            document.getElementById('modalServings').textContent = recipe.servings || 2;
+            document.getElementById('modalDescText').textContent = recipe.description || 'A delicious meal from your pantry.';
+
+            document.getElementById('modalTime').innerHTML = '<i class="fa-regular fa-clock"></i> ' + (recipe.cooking_time || '20-30 mins');
+            document.getElementById('modalDifficulty').innerHTML = '<i class="fa-regular fa-signal"></i> ' + (recipe.difficulty || 'Easy');
+            document.getElementById('modalCalories').innerHTML = '<i class="fa-regular fa-fire"></i> ' + (recipe.calories || '250') + ' kcal';
+            document.getElementById('modalMatch').innerHTML = '<i class="fa-regular fa-circle-check"></i> ' + (recipe.match_percent || '0') + '%';
+
+            var diff = (recipe.difficulty || 'Easy').toLowerCase();
+            var el = document.getElementById('modalDifficulty');
+            el.className = 'meta-value';
+            if (diff.includes('easy')) el.classList.add('easy');
+            else if (diff.includes('medium')) el.classList.add('medium');
+            else el.classList.add('hard');
+
+            var steps = (recipe.instructions || '').split('\n').filter(function(s) { return s.trim().length > 0; });
+            if (steps.length === 0) steps = (recipe.instructions || '').split('.').filter(function(s) { return s.trim().length > 0; });
+
+            var instHtml = '';
+            steps.forEach(function(step, i) {
+                var clean = step.replace(/^Step\s*\d+[:.\s]*/i, '').trim();
+                if (clean) {
+                    instHtml += '<div class="step-item"><span class="step-number">' + (i+1) + '.</span><span class="step-text">' + clean + '</span></div>';
+                }
+            });
+            document.getElementById('modalInstructions').innerHTML = instHtml || '<p style="color:#888;">No steps available.</p>';
+            document.getElementById('stepCount').textContent = (steps.length || 0) + ' steps';
+
+            var ingList = (recipe.ingredients || '').split(',').map(function(i) { return i.trim(); });
+            var ingHtml = '', missing = [];
+            ingList.forEach(function(ing) {
+                var available = false;
+                for (var p of pantryItems) {
+                    if (ing.toLowerCase().includes(p) || p.includes(ing.toLowerCase())) { available = true; break; }
+                }
+                ingHtml += '<div class="modal-ingredient-item">';
+                ingHtml += '<span class="ing-name">' + ing + '</span>';
+                ingHtml += '<span class="ing-status ' + (available ? 'available' : 'missing') + '">' + (available ? '✅ In Stock' : '❌ Need to Buy') + '</span>';
+                ingHtml += '</div>';
+                if (!available) missing.push({ name: ing });
+            });
+            document.getElementById('modalIngredientsGrid').innerHTML = ingHtml;
+            document.getElementById('ingCount').textContent = ingList.length + ' products';
+
+            currentMissingItems = missing;
+            var missHtml = '';
+            if (missing.length > 0) {
+                missing.forEach(function(item, i) {
+                    missHtml += '<div class="missing-item"><span class="missing-name">' + (i+1) + '. ' + item.name + '</span><span class="missing-qty">Need 1</span></div>';
+                });
+            } else {
+                missHtml = '<div style="padding:8px 0; color:#2E7D32; font-weight:600;">✅ All ingredients available in your pantry!</div>';
+            }
+            document.getElementById('missingItemsContainer').innerHTML = missHtml;
+            document.getElementById('missingCount').textContent = missing.length;
+            document.getElementById('missingItemsList').style.display = missing.length === 0 ? 'none' : 'block';
+
+            document.getElementById('recipeModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // ============================================================
+        // ADD TO SHOPPING LIST
+        // ============================================================
+        function addToShoppingList() {
+            if (currentMissingItems.length === 0) {
+                alert('✅ All ingredients are already in your pantry!');
+                return;
+            }
+            var items = currentMissingItems.map(function(i) { return i.name; }).join('\n• ');
+            alert('🛒 Items added to Shopping List:\n\n• ' + items + '\n\n(' + currentMissingItems.length + ' items)');
+        }
+
+        // ============================================================
+        // CLOSE MODAL
+        // ============================================================
+        function closeRecipeModal() {
+            document.getElementById('recipeModal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // ============================================================
+        // EVENTS
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close modal on overlay click
+            document.getElementById('recipeModal').addEventListener('click', function(e) {
+                if (e.target === this) closeRecipeModal();
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeRecipeModal();
+            });
+
+            // Active nav
+            document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+                if (link.getAttribute('href') === window.location.pathname) link.classList.add('active');
+            });
+
+            // Initialize filter counts after page load
+            setTimeout(function() {
+                updateFilterCounts();
+            }, 200);
+        });
+    </script>
+
+</body>
+</html>

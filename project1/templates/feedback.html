@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback | PantryPulse</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* ============================================================
+           GLOBAL
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('{{ url_for('static', filename='images/background.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: #1B2A1E;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.88);
+            z-index: 0;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        .feedback-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .feedback-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .feedback-header .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .feedback-header .header-left .icon-wrapper {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(46, 125, 50, 0.3);
+        }
+
+        .feedback-header .header-left .header-text h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1B2A1E;
+            letter-spacing: -1px;
+        }
+
+        .feedback-header .header-left .header-text h1 span {
+            color: #2E7D32;
+            position: relative;
+        }
+
+        .feedback-header .header-left .header-text h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2E7D32, #4CAF50);
+            border-radius: 4px;
+        }
+
+        .feedback-header .header-left .header-text p {
+            color: #4A6A4A;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .feedback-header .header-right .badge {
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #2E7D32;
+            border: 1px solid rgba(46, 125, 50, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ============================================================
+           FEEDBACK CARD
+           ============================================================ */
+        .feedback-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .feedback-card:hover {
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .feedback-card .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1B2A1E;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feedback-card .card-title i {
+            color: #2E7D32;
+            font-size: 20px;
+        }
+
+        /* ============================================================
+           FORM
+           ============================================================ */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1B2A1E;
+            margin-bottom: 6px;
+        }
+
+        .form-group label i {
+            color: #2E7D32;
+            margin-right: 8px;
+            width: 18px;
+        }
+
+        .form-group label .required {
+            color: #C62828;
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1B2A1E;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #2E7D32;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.08);
+            background: white;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #A0A0A0;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* ===== RATING STARS ===== */
+        .rating-container {
+            display: flex;
+            gap: 8px;
+            padding: 8px 0;
+        }
+
+        .rating-container .star {
+            font-size: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #ddd;
+            background: none;
+            border: none;
+        }
+
+        .rating-container .star:hover {
+            transform: scale(1.2);
+        }
+
+        .rating-container .star.active {
+            color: #F9A825;
+        }
+
+        .rating-container .star.active:hover {
+            transform: scale(1.2);
+        }
+
+        .rating-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4A6A4A;
+            margin-left: 8px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-submit {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.2);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ============================================================
+           FEEDBACK LIST
+           ============================================================ */
+        .feedback-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feedback-item {
+            padding: 16px 20px;
+            background: #FAFCFA;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-item:hover {
+            border-color: rgba(46, 125, 50, 0.15);
+            transform: translateX(4px);
+        }
+
+        .feedback-item .fb-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .feedback-item .fb-top .fb-subject {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1B2A1E;
+        }
+
+        .feedback-item .fb-top .fb-rating {
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+
+        .feedback-item .fb-top .fb-rating .star-filled {
+            color: #F9A825;
+        }
+
+        .feedback-item .fb-top .fb-rating .star-empty {
+            color: #ddd;
+        }
+
+        .feedback-item .fb-message {
+            font-size: 14px;
+            color: #4A6A4A;
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        .feedback-item .fb-date {
+            font-size: 12px;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ============================================================
+           EMPTY STATE
+           ============================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.6;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            color: #1B2A1E;
+            margin-bottom: 4px;
+        }
+
+        .empty-state p {
+            color: #4A6A4A;
+            font-size: 14px;
+        }
+
+        /* ============================================================
+           FLASH MESSAGES
+           ============================================================ */
+        .flash-message {
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.4s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .flash-message.success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border-left: 4px solid #2E7D32;
+        }
+
+        .flash-message.error {
+            background: #FFEBEE;
+            color: #C62828;
+            border-left: 4px solid #C62828;
+        }
+
+        .flash-message .flash-icon {
+            font-size: 22px;
+        }
+
+        .flash-message .flash-close {
+            margin-left: auto;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            color: inherit;
+        }
+
+        .flash-message .flash-close:hover {
+            opacity: 1;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .feedback-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .feedback-header .header-right {
+                width: 100%;
+            }
+
+            .feedback-header .header-right .badge {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .feedback-card {
+                padding: 24px 20px;
+            }
+
+            .feedback-item .fb-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .btn-submit {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .feedback-header .header-left .icon-wrapper {
+                width: 44px;
+                height: 44px;
+                font-size: 18px;
+            }
+
+            .feedback-header .header-left .header-text h1 {
+                font-size: 24px;
+            }
+
+            .feedback-card {
+                padding: 18px 14px;
+            }
+
+            .rating-container .star {
+                font-size: 28px;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                font-size: 13px;
+                padding: 10px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    {% include 'sidebar_nav.html' %}
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <div class="feedback-container">
+
+            <!-- ===== HEADER ===== -->
+            <div class="feedback-header">
+                <div class="header-left">
+                    <div class="icon-wrapper">
+                        <i class="fa-regular fa-comment"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1><span>Feedback</span></h1>
+                        <p>We'd love to hear your thoughts!</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span class="badge">
+                        <i class="fa-regular fa-message"></i>
+                        {{ feedbacks|length if feedbacks else 0 }} Responses
+                    </span>
+                </div>
+            </div>
+
+            <!-- ===== FLASH MESSAGES ===== -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            <span class="flash-icon">
+                                {% if category == 'success' %}✅
+                                {% elif category == 'error' %}❌
+                                {% else %}ℹ️{% endif %}
+                            </span>
+                            <span>{{ message }}</span>
+                            <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- ===== SEND FEEDBACK ===== -->
+            <div class="feedback-card">
+                <div class="card-title">
+                    <i class="fa-regular fa-pen-to-square"></i> Send Feedback
+                </div>
+
+                <form method="POST" id="feedbackForm">
+                    <div class="form-group">
+                        <label><i class="fa-regular fa-tag"></i> Subject <span class="required">*</span></label>
+                        <input type="text" name="subject" placeholder="What's this about?" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fa-regular fa-star"></i> Rating <span class="required">*</span></label>
+                        <div class="rating-container" id="ratingContainer">
+                            <button type="button" class="star" data-value="1">⭐</button>
+                            <button type="button" class="star" data-value="2">⭐</button>
+                            <button type="button" class="star" data-value="3">⭐</button>
+                            <button type="button" class="star" data-value="4">⭐</button>
+                            <button type="button" class="star" data-value="5">⭐</button>
+                            <span class="rating-label" id="ratingLabel">Click to rate</span>
+                        </div>
+                        <input type="hidden" name="rating" id="ratingInput" value="5" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fa-regular fa-message"></i> Message <span class="required">*</span></label>
+                        <textarea name="message" placeholder="Tell us what you think..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <i class="fa-regular fa-paper-plane"></i> Send Feedback
+                    </button>
+                </form>
+            </div>
+
+            <!-- ===== FEEDBACK HISTORY ===== -->
+            <div class="feedback-card">
+                <div class="card-title">
+                    <i class="fa-regular fa-clock"></i> Your Feedback
+                </div>
+
+                {% if feedbacks %}
+                    <div class="feedback-list">
+                        {% for feedback in feedbacks %}
+                            <div class="feedback-item">
+                                <div class="fb-top">
+                                    <span class="fb-subject">{{ feedback[0] }}</span>
+                                    <span class="fb-rating">
+                                        {% for i in range(1, 6) %}
+                                            {% if i <= feedback[2] %}
+                                                <span class="star-filled">⭐</span>
+                                            {% else %}
+                                                <span class="star-empty">⭐</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                <div class="fb-message">{{ feedback[1] }}</div>
+                                <div class="fb-date">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    {{ feedback[3].strftime('%Y-%m-%d %H:%M') if feedback[3] else 'N/A' }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">💬</div>
+                        <h3>No Feedback Yet</h3>
+                        <p>Share your thoughts and help us improve!</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ============================================================
+    SCRIPTS
+    ============================================================ -->
+    <script>
+        // ============================================================
+        // RATING STARS
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.star');
+            const ratingInput = document.getElementById('ratingInput');
+            const ratingLabel = document.getElementById('ratingLabel');
+
+            const ratingLabels = {
+                1: '⭐ Terrible',
+                2: '⭐ Poor',
+                3: '⭐⭐⭐ Average',
+                4: '⭐⭐⭐⭐ Good',
+                5: '⭐⭐⭐⭐⭐ Excellent'
+            };
+
+            stars.forEach(function(star) {
+                star.addEventListener('click', function() {
+                    const value = parseInt(this.dataset.value);
+                    ratingInput.value = value;
+
+                    stars.forEach(function(s) {
+                        s.classList.remove('active');
+                        if (parseInt(s.dataset.value) <= value) {
+                            s.classList.add('active');
+                        }
+                    });
+
+                    ratingLabel.textContent = ratingLabels[value] || '';
+                });
+
+                star.addEventListener('mouseenter', function() {
+                    const value = parseInt(this.dataset.value);
+                    stars.forEach(function(s) {
+                        if (parseInt(s.dataset.value) <= value) {
+                            s.style.transform = 'scale(1.2)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', function() {
+                    stars.forEach(function(s) {
+                        s.style.transform = 'scale(1)';
+                    });
+                });
+            });
+
+            // Set default rating (5 stars)
+            const defaultStar = document.querySelector('.star[data-value="5"]');
+            if (defaultStar) {
+                defaultStar.click();
+            }
+
+            // ============================================================
+            // FORM SUBMIT - LOADING STATE
+            // ============================================================
+            const form = document.getElementById('feedbackForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (form) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+                });
+            }
+
+            // ============================================================
+            // AUTO-HIDE FLASH MESSAGES
+            // ============================================================
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(msg) {
+                setTimeout(function() {
+                    if (msg) {
+                        msg.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        msg.style.opacity = '0';
+                        msg.style.transform = 'translateY(-10px)';
+                        setTimeout(function() {
+                            if (msg.parentNode) {
+                                msg.remove();
+                            }
+                        }, 500);
+                    }
+                }, 5000);
+            });
+
+            // ============================================================
+            // SET ACTIVE NAV
+            // ============================================================
+            document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+                if (link.getAttribute('href') === window.location.pathname) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Purchases | PantryPulse</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* ============================================================
+           GLOBAL
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('{{ url_for('static', filename='images/background.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: #1B2A1E;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.88);
+            z-index: 0;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        .purchase-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .purchase-header {
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .purchase-header .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .purchase-header .header-left .icon-wrapper {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(46, 125, 50, 0.3);
+        }
+
+        .purchase-header .header-left .header-text h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1B2A1E;
+            letter-spacing: -1px;
+        }
+
+        .purchase-header .header-left .header-text h1 span {
+            color: #2E7D32;
+            position: relative;
+        }
+
+        .purchase-header .header-left .header-text h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2E7D32, #4CAF50);
+            border-radius: 4px;
+        }
+
+        .purchase-header .header-left .header-text p {
+            color: #4A6A4A;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .purchase-header .header-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .purchase-header .header-right .badge {
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #2E7D32;
+            border: 1px solid rgba(46, 125, 50, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .purchase-header .header-right .badge i {
+            font-size: 16px;
+        }
+
+        /* ============================================================
+           OPTION CARDS
+           ============================================================ */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px 28px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2E7D32, #4CAF50);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .option-card:hover::before {
+            opacity: 1;
+        }
+
+        .option-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.08);
+            border-color: rgba(46, 125, 50, 0.15);
+        }
+
+        .option-card .card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .option-card .card-top .icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .option-card .card-top .icon-wrapper.ocr {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            color: #2E7D32;
+        }
+
+        .option-card .card-top .icon-wrapper.manual {
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+            color: #E65100;
+        }
+
+        .option-card .card-top .card-content {
+            flex: 1;
+        }
+
+        .option-card .card-top .card-content .option-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1B2A1E;
+        }
+
+        .option-card .card-top .card-content .option-desc {
+            font-size: 14px;
+            color: #4A6A4A;
+            margin-top: 2px;
+            line-height: 1.5;
+        }
+
+        .option-card .card-top .card-content .option-badge {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(46, 125, 50, 0.08);
+            color: #2E7D32;
+        }
+
+        .option-card .card-arrow {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            color: #4A6A4A;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .option-card:hover .card-arrow {
+            color: #2E7D32;
+            transform: translateX(6px);
+        }
+
+        .option-card .feature-list {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .option-card .feature-list .feature {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #4A6A4A;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+
+        .option-card .feature-list .feature i {
+            color: #2E7D32;
+            font-size: 10px;
+        }
+
+        /* ============================================================
+           UPLOAD SECTION
+           ============================================================ */
+        .upload-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 2px dashed rgba(46, 125, 50, 0.2);
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .upload-section.dragover {
+            border-color: #2E7D32;
+            background: rgba(46, 125, 50, 0.04);
+            transform: scale(1.01);
+        }
+
+        .upload-section .upload-icon {
+            font-size: 64px;
+            color: #2E7D32;
+            margin-bottom: 16px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .upload-section h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1B2A1E;
+            margin-bottom: 6px;
+        }
+
+        .upload-section p {
+            font-size: 14px;
+            color: #4A6A4A;
+            margin-bottom: 20px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .upload-section .instruction-box {
+            background: linear-gradient(135deg, #FFF8E1, #FFECB3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            text-align: left;
+            border-left: 4px solid #F9A825;
+        }
+
+        .upload-section .instruction-box .inst-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #E65100;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-section .instruction-box .inst-title i {
+            font-size: 16px;
+        }
+
+        .upload-section .instruction-box .inst-text {
+            font-size: 13px;
+            color: #4A6A4A;
+            line-height: 1.6;
+        }
+
+        .upload-section .instruction-box .inst-text i {
+            color: #2E7D32;
+            margin-right: 6px;
+        }
+
+        .upload-section .upload-btn {
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(46, 125, 50, 0.2);
+        }
+
+        .upload-section .upload-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(46, 125, 50, 0.3);
+        }
+
+        .upload-section .upload-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .upload-section .upload-info {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .upload-section .upload-info span {
+            font-size: 13px;
+            color: #4A6A4A;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .upload-section .upload-info span i {
+            color: #2E7D32;
+        }
+
+        .upload-progress {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .upload-progress .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #E8F5E9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .upload-progress .progress-bar .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #2E7D32, #4CAF50);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .upload-progress .progress-text {
+            font-size: 13px;
+            color: #4A6A4A;
+            margin-top: 8px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* ============================================================
+           SCANNED ITEMS SECTION
+           ============================================================ */
+        .scanned-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-top: 24px;
+            animation: slideUp 0.4s ease;
+        }
+
+        .scanned-section.show {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .scanned-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .scanned-header .left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .scanned-header .left .icon {
+            font-size: 28px;
+        }
+
+        .scanned-header .left h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1B2A1E;
+        }
+
+        .scanned-header .count-badge {
+            font-size: 13px;
+            color: #4A6A4A;
+            background: #F5F9F5;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        .store-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: #F5F9F5;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .store-info .store-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1B2A1E;
+        }
+
+        .store-info .store-name i {
+            color: #2E7D32;
+            margin-right: 6px;
+        }
+
+        .store-info .store-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2E7D32;
+        }
+
+        /* ===== ITEM ROW ===== */
+        .item-row {
+            display: grid;
+            grid-template-columns: 1.8fr 0.8fr 0.7fr 0.5fr 0.7fr 0.4fr;
+            gap: 10px;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease;
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-row:hover {
+            background: #FAFCFA;
+            margin: 0 -8px;
+            padding-left: 8px;
+            padding-right: 8px;
+            border-radius: 10px;
+        }
+
+        .item-row .name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1B2A1E;
+        }
+
+        .item-row .category-select select {
+            padding: 4px 8px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            background: #FAFCFA;
+            cursor: pointer;
+            width: 100%;
+            max-width: 100px;
+            transition: all 0.2s ease;
+        }
+
+        .item-row .category-select select:focus {
+            border-color: #2E7D32;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        .item-row .price {
+            font-weight: 700;
+            font-size: 14px;
+            color: #2E7D32;
+        }
+
+        .item-row .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #F5F9F5;
+            border-radius: 8px;
+            padding: 2px;
+        }
+
+        .item-row .qty-control .qty-btn {
+            width: 26px;
+            height: 26px;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: #1B2A1E;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .item-row .qty-control .qty-btn:hover {
+            background: #2E7D32;
+            color: white;
+        }
+
+        .item-row .qty-control .qty-value {
+            min-width: 26px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .item-row .expiry-input input {
+            padding: 4px 8px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            max-width: 120px;
+            transition: all 0.2s ease;
+            background: #FAFCFA;
+        }
+
+        .item-row .expiry-input input:focus {
+            border-color: #2E7D32;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+            background: white;
+        }
+
+        .item-row .expiry-input .days-left {
+            font-size: 10px;
+            color: #aaa;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .item-row .select-checkbox {
+            text-align: center;
+        }
+
+        .item-row .select-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2E7D32;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .item-row .select-checkbox input[type="checkbox"]:hover {
+            transform: scale(1.1);
+        }
+
+        /* ============================================================
+           SCANNED ACTIONS
+           ============================================================ */
+        .scanned-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+            flex-wrap: wrap;
+        }
+
+        .btn-confirm {
+            padding: 12px 36px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.2);
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-confirm:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-cancel {
+            padding: 12px 28px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #4A6A4A;
+            border: 2px solid rgba(0, 0, 0, 0.06);
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            border-color: #C62828;
+            color: #C62828;
+            background: #FFEBEE;
+        }
+
+        /* ============================================================
+           SUCCESS TOAST
+           ============================================================ */
+        .success-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(46, 125, 50, 0.3);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+            animation: slideInRight 0.5s ease;
+            max-width: 420px;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .success-toast .toast-icon {
+            font-size: 28px;
+        }
+
+        .success-toast .toast-content {
+            flex: 1;
+        }
+
+        .success-toast .toast-content .toast-title {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .success-toast .toast-content .toast-sub {
+            font-weight: 400;
+            opacity: 0.9;
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .success-toast .toast-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .success-toast .toast-close:hover {
+            opacity: 1;
+        }
+
+        /* ============================================================
+           FLASH MESSAGES
+           ============================================================ */
+        .flash-message {
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.4s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .flash-message.success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border-left: 4px solid #2E7D32;
+        }
+
+        .flash-message.error {
+            background: #FFEBEE;
+            color: #C62828;
+            border-left: 4px solid #C62828;
+        }
+
+        .flash-message .flash-icon {
+            font-size: 22px;
+        }
+
+        .flash-message .flash-close {
+            margin-left: auto;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            color: inherit;
+        }
+
+        .flash-message .flash-close:hover {
+            opacity: 1;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 1024px) {
+            .options-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .purchase-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .purchase-header .header-left {
+                width: 100%;
+            }
+
+            .purchase-header .header-right {
+                width: 100%;
+            }
+
+            .purchase-header .header-right .badge {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .option-card {
+                padding: 24px 20px;
+            }
+
+            .upload-section {
+                padding: 24px 16px;
+            }
+
+            .upload-section .upload-icon {
+                font-size: 48px;
+            }
+
+            .upload-section h3 {
+                font-size: 18px;
+            }
+
+            .item-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                padding: 14px 0;
+            }
+
+            .item-row .select-checkbox {
+                grid-column: span 2;
+                text-align: left;
+            }
+
+            .item-row .expiry-input input {
+                max-width: 100%;
+            }
+
+            .item-row .category-select select {
+                max-width: 100%;
+            }
+
+            .scanned-actions {
+                flex-direction: column;
+            }
+
+            .scanned-actions .btn-confirm,
+            .scanned-actions .btn-cancel {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .store-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .scanned-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .success-toast {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .purchase-header .header-left .icon-wrapper {
+                width: 44px;
+                height: 44px;
+                font-size: 18px;
+            }
+
+            .purchase-header .header-left .header-text h1 {
+                font-size: 24px;
+            }
+
+            .option-card .card-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .option-card .card-top .icon-wrapper {
+                width: 44px;
+                height: 44px;
+                font-size: 18px;
+            }
+
+            .option-card .feature-list {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .upload-section .upload-info {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .upload-section .upload-info span {
+                justify-content: center;
+            }
+
+            .item-row {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .item-row .select-checkbox {
+                grid-column: span 1;
+            }
+
+            .item-row .qty-control {
+                justify-content: center;
+            }
+
+            .success-toast {
+                padding: 14px 18px;
+            }
+
+            .success-toast .toast-icon {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    {% include 'sidebar_nav.html' %}
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <div class="purchase-container">
+
+            <!-- ===== HEADER ===== -->
+            <div class="purchase-header">
+                <div class="header-left">
+                    <div class="icon-wrapper">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1><span>My</span> Purchases</h1>
+                        <p>Upload your supermarket bill and manage your purchases</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span class="badge">
+                        <i class="fa-regular fa-clock"></i>
+                        <span id="currentDateTime"></span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- ===== FLASH MESSAGES ===== -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            <span class="flash-icon">
+                                {% if category == 'success' %}✅
+                                {% elif category == 'error' %}❌
+                                {% else %}ℹ️{% endif %}
+                            </span>
+                            <span>{{ message }}</span>
+                            <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- ===== OPTIONS ===== -->
+            <div class="options-grid">
+                <!-- Option 1: Upload Bill -->
+                <div class="option-card" onclick="document.getElementById('fileInput').click()">
+                    <div class="card-top">
+                        <div class="icon-wrapper ocr">
+                            <i class="fa-solid fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="option-title">Upload Bill / Receipt</div>
+                            <div class="option-desc">AI OCR extracts items automatically from your receipt</div>
+                            <span class="option-badge"><i class="fa-regular fa-circle-check"></i> Option 1</span>
+                        </div>
+                    </div>
+                    <div class="feature-list">
+                        <span class="feature"><i class="fa-solid fa-robot"></i> AI Powered</span>
+                        <span class="feature"><i class="fa-regular fa-clock"></i> Instant</span>
+                        <span class="feature"><i class="fa-solid fa-bolt"></i> Auto-fill</span>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Option 2: Manual Entry -->
+                <div class="option-card" onclick="window.location.href='{{ url_for('add_purchase') }}'">
+                    <div class="card-top">
+                        <div class="icon-wrapper manual">
+                            <i class="fa-solid fa-pen"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="option-title">Manual Purchase Entry</div>
+                            <div class="option-desc">Add items manually with expiry dates and custom details</div>
+                            <span class="option-badge"><i class="fa-regular fa-circle-check"></i> Option 2</span>
+                        </div>
+                    </div>
+                    <div class="feature-list">
+                        <span class="feature"><i class="fa-regular fa-pen-to-square"></i> Full Control</span>
+                        <span class="feature"><i class="fa-regular fa-calendar"></i> Set Dates</span>
+                        <span class="feature"><i class="fa-solid fa-tag"></i> Customize</span>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== UPLOAD SECTION ===== -->
+            <div class="upload-section" id="dropZone">
+                <div class="upload-icon">📄</div>
+                <h3>Drop Supermarket Bill or Receipt Here</h3>
+                <p>Upload receipt photos or PDFs from Reliance Smart, D-Mart, Blinkit, Zepto, or Instamart</p>
+
+                <div class="instruction-box">
+                    <div class="inst-title">
+                        <i class="fa-solid fa-circle-info"></i> Instructions
+                    </div>
+                    <div class="inst-text">
+                        <i class="fa-solid fa-check-circle"></i> Upload only <strong>grocery bills / receipts</strong><br>
+                        <i class="fa-solid fa-check-circle"></i> Supported formats: <strong>JPG, PNG, PDF</strong><br>
+                        <i class="fa-solid fa-check-circle"></i> Only <strong>food items</strong> will be extracted<br>
+                        <i class="fa-solid fa-check-circle"></i> You can <strong>edit quantity, category & expiry date</strong> before adding to pantry
+                    </div>
+                </div>
+
+                <button class="upload-btn" id="uploadBtn" onclick="document.getElementById('fileInput').click()">
+                    <i class="fa-solid fa-cloud-upload-alt"></i> Browse & Scan Receipt
+                </button>
+
+                <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf">
+
+                <div class="upload-progress" id="uploadProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Scanning receipt...</div>
+                </div>
+
+                <div class="upload-info">
+                    <span><i class="fa-solid fa-check-circle"></i> JPG, PNG, PDF Supported</span>
+                    <span><i class="fa-solid fa-robot"></i> AI OCR Instant Text Extraction</span>
+                    <span><i class="fa-solid fa-shield-halved"></i> Secure & Private</span>
+                </div>
+            </div>
+
+            <!-- ===== SCANNED ITEMS ===== -->
+            <div class="scanned-section" id="scannedSection">
+                <div class="scanned-header">
+                    <div class="left">
+                        <span class="icon">🧾</span>
+                        <h3>Extracted Items</h3>
+                    </div>
+                    <span class="count-badge" id="selectedCount">0 of 0 selected</span>
+                </div>
+
+                <div class="store-info" id="storeInfo">
+                    <span class="store-name"><i class="fa-solid fa-store"></i> <span id="storeName">Smart Mart</span></span>
+                    <span class="store-total">Total: ₹<span id="storeTotal">0</span></span>
+                </div>
+
+                <div id="itemsContainer">
+                    <!-- Items will be rendered here -->
+                </div>
+
+                <div class="scanned-actions">
+                    <button class="btn-confirm" id="confirmBtn" onclick="confirmItems()">
+                        <i class="fa-solid fa-check"></i> Add All Items to Pantry
+                    </button>
+                    <button class="btn-cancel" onclick="cancelScan()">
+                        <i class="fa-solid fa-times"></i> Cancel
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ============================================================
+    SCRIPTS
+    ============================================================ -->
+    <script>
+        // ============================================================
+        // CURRENT DATE TIME
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            var now = new Date();
+            var dateStr = now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+            var timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('currentDateTime').textContent = dateStr + ' · ' + timeStr;
+        });
+
+        // ============================================================
+        // STATE
+        // ============================================================
+
+        var scannedItems = [];
+        var selectedIndices = new Set();
+        var isProcessing = false;
+
+        // ============================================================
+        // CATEGORY OPTIONS
+        // ============================================================
+
+        var categoryOptions = [
+            'Pantry', 'Dairy', 'Fruits', 'Vegetables', 'Bakery',
+            'Poultry', 'Grains', 'Snacks', 'Beverages', 'Oils',
+            'Spices', 'Canned', 'Frozen', 'Meat', 'Seafood',
+            'Condiments', 'Sauces', 'Baking', 'Breakfast', 'Other'
+        ];
+
+        // ============================================================
+        // DOM REFS
+        // ============================================================
+
+        var fileInput = document.getElementById('fileInput');
+        var uploadBtn = document.getElementById('uploadBtn');
+        var dropZone = document.getElementById('dropZone');
+        var scannedSection = document.getElementById('scannedSection');
+        var itemsContainer = document.getElementById('itemsContainer');
+        var storeNameEl = document.getElementById('storeName');
+        var storeTotalEl = document.getElementById('storeTotal');
+        var selectedCountEl = document.getElementById('selectedCount');
+        var confirmBtn = document.getElementById('confirmBtn');
+        var progressFill = document.getElementById('progressFill');
+        var progressText = document.getElementById('progressText');
+        var uploadProgress = document.getElementById('uploadProgress');
+
+        // ============================================================
+        // FILE INPUT HANDLER
+        // ============================================================
+
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    uploadAndScan(this.files[0]);
+                }
+                this.value = '';
+            });
+        }
+
+        // ============================================================
+        // DRAG AND DROP
+        // ============================================================
+
+        if (dropZone) {
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    uploadAndScan(e.dataTransfer.files[0]);
+                }
+            });
+        }
+
+        // ============================================================
+        // UPLOAD AND SCAN
+        // ============================================================
+
+        function uploadAndScan(file) {
+            if (isProcessing) return;
+            isProcessing = true;
+
+            var formData = new FormData();
+            formData.append('receipt', file);
+
+            uploadProgress.style.display = 'block';
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Uploading...';
+
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scanning...';
+
+            var progress = 0;
+            var interval = setInterval(function() {
+                progress += Math.random() * 15;
+                if (progress > 90) {
+                    progress = 90;
+                    clearInterval(interval);
+                }
+                progressFill.style.width = progress + '%';
+            }, 200);
+
+            fetch('/scan_receipt', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                clearInterval(interval);
+                progressFill.style.width = '100%';
+                progressText.textContent = 'Done!';
+
+                if (result.success) {
+                    scannedItems = result.items.map(function(item) {
+                        return {
+                            name: item.name || 'Unknown',
+                            category: item.category || 'Pantry',
+                            price: parseFloat(item.price) || 0,
+                            quantity: parseInt(item.quantity) || 1,
+                            expiry_days: parseInt(item.expiry_days) || 30
+                        };
+                    });
+
+                    selectedIndices = new Set(scannedItems.map(function(_, i) { return i; }));
+                    renderItems(scannedItems, result.store_name, result.total_amount);
+                    scannedSection.classList.add('show');
+                    updateSelectedCount();
+                    showSuccessToast('✅ Receipt scanned successfully!', result.items.length + ' items found.');
+                } else {
+                    alert('❌ Error: ' + (result.error || 'Unknown error'));
+                }
+            })
+            .catch(function(error) {
+                clearInterval(interval);
+                alert('❌ Error: ' + error.message);
+            })
+            .finally(function() {
+                isProcessing = false;
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fa-solid fa-cloud-upload-alt"></i> Browse & Scan Receipt';
+                setTimeout(function() {
+                    uploadProgress.style.display = 'none';
+                    progressFill.style.width = '0%';
+                }, 1000);
+            });
+        }
+
+        // ============================================================
+        // RENDER ITEMS
+        // ============================================================
+
+        function renderItems(items, storeName, totalAmount) {
+            storeNameEl.textContent = storeName || 'Unknown Store';
+            storeTotalEl.textContent = totalAmount || '0';
+
+            if (items.length === 0) {
+                itemsContainer.innerHTML = '<div style="padding:30px;text-align:center;color:#4A6A4A;font-size:14px;">No food items found in this receipt.</div>';
+                return;
+            }
+
+            var html = '';
+            items.forEach(function(item, index) {
+                var days = parseInt(item.expiry_days) || 30;
+                var expiryDate = new Date();
+                expiryDate.setDate(expiryDate.getDate() + days);
+                var expiryStr = expiryDate.toISOString().split('T')[0];
+
+                var categoryOptionsHtml = '';
+                categoryOptions.forEach(function(cat) {
+                    var selected = cat === item.category ? 'selected' : '';
+                    categoryOptionsHtml += '<option value="' + cat + '" ' + selected + '>' + cat + '</option>';
+                });
+
+                html += '<div class="item-row" data-index="' + index + '">';
+                html += '<div class="name">' + (item.name || 'Unknown') + '</div>';
+                html += '<div class="category-select">';
+                html += '<select id="category_' + index + '" onchange="updateCategory(' + index + ', this.value)">';
+                html += categoryOptionsHtml;
+                html += '</select>';
+                html += '</div>';
+                html += '<div class="price">₹' + (item.price || '0') + '</div>';
+                html += '<div class="qty-control">';
+                html += '<button class="qty-btn" onclick="changeQty(' + index + ', -1)">−</button>';
+                html += '<span class="qty-value" id="qty_' + index + '">' + (item.quantity || 1) + '</span>';
+                html += '<button class="qty-btn" onclick="changeQty(' + index + ', 1)">+</button>';
+                html += '</div>';
+                html += '<div class="expiry-input">';
+                html += '<input type="date" value="' + expiryStr + '" id="expiry_' + index + '" onchange="updateDays(' + index + ')">';
+                html += '<span class="days-left" id="days_' + index + '">' + days + ' days left</span>';
+                html += '</div>';
+                html += '<div class="select-checkbox">';
+                html += '<input type="checkbox" checked onchange="toggleSelect(' + index + ', this)">';
+                html += '</div>';
+                html += '</div>';
+            });
+
+            itemsContainer.innerHTML = html;
+            confirmBtn.disabled = false;
+        }
+
+        // ============================================================
+        // UPDATE CATEGORY
+        // ============================================================
+
+        function updateCategory(index, value) {
+            scannedItems[index].category = value;
+        }
+
+        // ============================================================
+        // QUANTITY CONTROL
+        // ============================================================
+
+        function changeQty(index, delta) {
+            var qtySpan = document.getElementById('qty_' + index);
+            var current = parseInt(qtySpan.textContent) || 1;
+            var newQty = current + delta;
+            if (newQty < 1) newQty = 1;
+            qtySpan.textContent = newQty;
+            scannedItems[index].quantity = newQty;
+        }
+
+        // ============================================================
+        // UPDATE DAYS LEFT
+        // ============================================================
+
+        function updateDays(index) {
+            var input = document.getElementById('expiry_' + index);
+            var daysSpan = document.getElementById('days_' + index);
+            var selectedDate = new Date(input.value);
+            var today = new Date();
+            var days = Math.ceil((selectedDate - today) / (1000 * 60 * 60 * 24));
+            daysSpan.textContent = days + ' days left';
+            scannedItems[index].expiry_date = input.value;
+        }
+
+        // ============================================================
+        // SELECT / DESELECT
+        // ============================================================
+
+        function toggleSelect(index, checkbox) {
+            if (checkbox.checked) {
+                selectedIndices.add(index);
+            } else {
+                selectedIndices.delete(index);
+            }
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            var count = selectedIndices.size;
+            var total = scannedItems.length;
+            selectedCountEl.textContent = count + ' of ' + total + ' selected';
+        }
+
+        // ============================================================
+        // SHOW SUCCESS TOAST
+        // ============================================================
+        function showSuccessToast(title, subtitle) {
+            var toast = document.createElement('div');
+            toast.className = 'success-toast';
+            toast.innerHTML = `
+                <span class="toast-icon">✅</span>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-sub">${subtitle}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(function() {
+                if (toast.parentNode) {
+                    toast.style.transition = 'opacity 0.5s ease';
+                    toast.style.opacity = '0';
+                    setTimeout(function() {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 500);
+                }
+            }, 5000);
+        }
+
+        // ============================================================
+        // CONFIRM ITEMS
+        // ============================================================
+
+        function confirmItems() {
+            if (selectedIndices.size === 0) {
+                alert('Please select at least one item to add to pantry!');
+                return;
+            }
+
+            var selected = [];
+            scannedItems.forEach(function(item, index) {
+                if (selectedIndices.has(index)) {
+                    var expiryInput = document.getElementById('expiry_' + index);
+                    var qtySpan = document.getElementById('qty_' + index);
+                    var categorySelect = document.getElementById('category_' + index);
+                    selected.push({
+                        name: item.name,
+                        category: categorySelect ? categorySelect.value : item.category,
+                        price: item.price || 0,
+                        quantity: parseInt(qtySpan ? qtySpan.textContent : 1),
+                        expiry_date: expiryInput ? expiryInput.value : '',
+                        expiry_days: item.expiry_days || 30
+                    });
+                }
+            });
+
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+
+            var formData = new FormData();
+            formData.append('items', JSON.stringify(selected));
+
+            fetch('/add_scanned_items', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                if (result.success) {
+                    // Show success toast
+                    showSuccessToast(
+                        '✅ ' + result.message,
+                        result.added_count + ' items added · ' + result.pantry_count + ' total in pantry'
+                    );
+                    
+                    scannedSection.classList.remove('show');
+                    scannedItems = [];
+                    selectedIndices = new Set();
+                    
+                    // Reload after 2 seconds to show updated logs
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    alert('❌ Error: ' + (result.error || 'Unknown error'));
+                }
+            })
+            .catch(function(error) {
+                alert('❌ Error: ' + error.message);
+            })
+            .finally(function() {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="fa-solid fa-check"></i> Add All Items to Pantry';
+            });
+        }
+
+        // ============================================================
+        // CANCEL SCAN
+        // ============================================================
+
+        function cancelScan() {
+            scannedSection.classList.remove('show');
+            scannedItems = [];
+            selectedIndices = new Set();
+            itemsContainer.innerHTML = '';
+        }
+
+        // ============================================================
+        // SET ACTIVE NAV & AUTO-HIDE FLASH
+        // ============================================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set active nav link
+            document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+                if (link.getAttribute('href') === window.location.pathname) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Auto-hide flash messages after 5 seconds
+            var flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(msg) {
+                setTimeout(function() {
+                    if (msg) {
+                        msg.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        msg.style.opacity = '0';
+                        msg.style.transform = 'translateY(-10px)';
+                        setTimeout(function() {
+                            if (msg.parentNode) {
+                                msg.remove();
+                            }
+                        }, 500);
+                    }
+                }, 5000);
+            });
+        });
+    </script>
+
+</body>
+</html>

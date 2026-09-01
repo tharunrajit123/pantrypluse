@@ -1,0 +1,298 @@
+/* ============================================================
+   PANTRYPULSE - LESS BLUR VERSION
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #2E7D32;
+    --primary-light: #4CAF50;
+    --primary-dark: #1B5E20;
+    --accent: #FF6B35;
+    --alert-yellow: #F4A340;
+    --alert-red: #E64A3B;
+    --bg-color: #F4F9F1;
+    --text-dark: #1B2A1E;
+    --text-light: #4A6A4A;
+    --white: #ffffff;
+    --shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+    --radius: 12px;
+}
+
+/* ============================================================
+   BODY - BACKGROUND IMAGE WITH LESS BLUR
+   ============================================================ */
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-dark);
+    min-height: 100vh;
+    background-image: url('/static/images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+/* ===== LESS BLUR ON BACKGROUND (3px) ===== */
+body::before {
+    content: '';
+    position: fixed;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background-image: url('/static/images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    filter: blur(3px);
+    -webkit-filter: blur(3px);
+    z-index: -2;
+}
+
+/* ===== OVERLAY FOR READABILITY ===== */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    z-index: -1;
+}
+
+/* ============================================================
+   SIDEBAR - Solid White (No Blur)
+   ============================================================ */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background: #ffffff;
+    border-right: 1px solid #e8f5e9;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+    overflow-y: auto;
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e8f5e9;
+    margin-bottom: 16px;
+}
+
+.sidebar-logo .logo-icon { font-size: 28px; }
+.sidebar-logo .logo-text { font-size: 20px; font-weight: 800; color: #1B2A1E; }
+.sidebar-logo .logo-text span { color: #2E7D32; }
+
+.sidebar-profile {
+    text-align: center;
+    padding: 16px 0;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #e8f5e9;
+}
+
+.profile-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2E7D32, #4CAF50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    overflow: hidden;
+}
+
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-name { font-size: 16px; font-weight: 700; color: #1B2A1E; }
+.profile-email { font-size: 12px; color: #4A6A4A; }
+
+.sidebar-nav { list-style: none; flex: 1; padding: 0; margin: 0; }
+.sidebar-nav li { margin-bottom: 4px; }
+
+.sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #4A6A4A;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav li a i { width: 20px; font-size: 16px; color: #4A6A4A; }
+.sidebar-nav li a:hover { background: #f5f9f5; color: #2E7D32; }
+.sidebar-nav li a:hover i { color: #2E7D32; }
+.sidebar-nav li a.active { background: #f5f9f5; color: #2E7D32; font-weight: 600; }
+.sidebar-nav li a.active i { color: #2E7D32; }
+
+.sidebar-bottom {
+    border-top: 1px solid #e8f5e9;
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-bottom a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #4A6A4A;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-bottom a i { width: 20px; font-size: 16px; }
+.sidebar-bottom .profile-link:hover { background: #f5f9f5; color: #2E7D32; }
+.sidebar-bottom .logout-link { color: #C62828; }
+.sidebar-bottom .logout-link:hover { background: #FFEBEE; }
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+
+.main-content {
+    margin-left: 260px;
+    min-height: 100vh;
+    padding: 20px 30px;
+}
+
+/* ============================================================
+   CARDS - Solid White (No Blur)
+   ============================================================ */
+
+.card,
+.product-card,
+.feature-card,
+.stat-card,
+.middle-card,
+.pantry-card,
+.alert-card,
+.recipe-card,
+.order-card,
+.dash-card,
+.sustainability-card,
+.payment-card,
+.success-card,
+.login-card,
+.add-pantry-container {
+    background: #ffffff;
+    border: 1px solid #e8f5e9;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn-primary {
+    background: linear-gradient(135deg, #2E7D32, #4CAF50);
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(46,125,50,0.3); }
+
+.btn-accent {
+    background: #FF6B35;
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-accent:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(255,107,53,0.3); }
+
+/* ============================================================
+   STATUS BADGES
+   ============================================================ */
+
+.status-badge {
+    padding: 4px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-badge.safe { background: #E8F5E9; color: #2E7D32; }
+.status-badge.expiring { background: #FFF8E1; color: #F57F17; }
+.status-badge.urgent { background: #FFEBEE; color: #C62828; }
+.status-badge.expired { background: #FFEBEE; color: #C62828; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 12px 16px;
+        border-right: none;
+        border-bottom: 1px solid #e8f5e9;
+    }
+    .sidebar-profile { display: none; }
+    .sidebar-nav { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
+    .sidebar-nav li { margin-bottom: 0; }
+    .sidebar-nav li a { padding: 8px 12px; font-size: 12px; gap: 6px; }
+    .sidebar-nav li a span { display: none; }
+    .sidebar-bottom { flex-direction: row; border-top: none; padding-top: 0; }
+    .sidebar-bottom a span { display: none; }
+    .main-content { margin-left: 0; padding: 16px; }
+}

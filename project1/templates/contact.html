@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | PantryPulse</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* ============================================================
+           GLOBAL
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('{{ url_for('static', filename='images/background.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: #1B2A1E;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.88);
+            z-index: 0;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .contact-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .contact-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: #1B2A1E;
+            letter-spacing: -1px;
+        }
+
+        .contact-header h1 span {
+            color: #2E7D32;
+            position: relative;
+        }
+
+        .contact-header h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2E7D32, #4CAF50);
+            border-radius: 4px;
+        }
+
+        .contact-header p {
+            color: #4A6A4A;
+            font-size: 16px;
+            margin-top: 8px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ============================================================
+           CONTACT GRID
+           ============================================================ */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* ============================================================
+           CONTACT INFO CARDS
+           ============================================================ */
+        .contact-info-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .contact-info-card:hover {
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+        }
+
+        .contact-info-card .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1B2A1E;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .contact-info-card .card-title i {
+            color: #2E7D32;
+            font-size: 22px;
+            width: 44px;
+            height: 44px;
+            background: rgba(46, 125, 50, 0.08);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-info-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease;
+        }
+
+        .contact-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .contact-info-item:hover {
+            padding-left: 8px;
+            background: rgba(46, 125, 50, 0.02);
+            border-radius: 8px;
+        }
+
+        .contact-info-item .info-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(46, 125, 50, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2E7D32;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .contact-info-item .info-content {
+            flex: 1;
+        }
+
+        .contact-info-item .info-content .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4A6A4A;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-info-item .info-content .info-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1B2A1E;
+        }
+
+        .contact-info-item .info-content .info-value a {
+            color: #2E7D32;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .contact-info-item .info-content .info-value a:hover {
+            color: #1B5E20;
+            text-decoration: underline;
+        }
+
+        /* ============================================================
+           MAP CARD
+           ============================================================ */
+        .map-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .map-card:hover {
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .map-card iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 320px;
+            border: none;
+        }
+
+        /* ============================================================
+           CONTACT FORM
+           ============================================================ */
+        .contact-form-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .contact-form-card:hover {
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+        }
+
+        .contact-form-card .form-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1B2A1E;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-form-card .form-title i {
+            color: #2E7D32;
+        }
+
+        .contact-form-card .form-subtitle {
+            font-size: 14px;
+            color: #4A6A4A;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1B2A1E;
+            margin-bottom: 6px;
+        }
+
+        .form-group label i {
+            color: #2E7D32;
+            margin-right: 8px;
+        }
+
+        .form-group label .required {
+            color: #C62828;
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1B2A1E;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #2E7D32;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.08);
+            background: white;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #A0A0A0;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.2);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-submit i {
+            font-size: 18px;
+        }
+
+        /* ============================================================
+           SOCIAL MEDIA
+           ============================================================ */
+        .social-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+            grid-column: 1 / -1;
+            transition: all 0.3s ease;
+        }
+
+        .social-section:hover {
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .social-section .social-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1B2A1E;
+            margin-bottom: 16px;
+        }
+
+        .social-section .social-title i {
+            color: #2E7D32;
+            margin-right: 8px;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .social-icons .social-link {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .social-icons .social-link:hover {
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .social-icons .social-link.facebook {
+            background: #1877F2;
+        }
+
+        .social-icons .social-link.twitter {
+            background: #000000;
+        }
+
+        .social-icons .social-link.instagram {
+            background: linear-gradient(135deg, #E4405F, #F56040, #FD1D1D, #FCAF45);
+        }
+
+        .social-icons .social-link.youtube {
+            background: #FF0000;
+        }
+
+        .social-icons .social-link.linkedin {
+            background: #0A66C2;
+        }
+
+        .social-icons .social-link.whatsapp {
+            background: #25D366;
+        }
+
+        /* ============================================================
+           FLASH MESSAGES
+           ============================================================ */
+        .flash-message {
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.4s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .flash-message.success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border-left: 4px solid #2E7D32;
+        }
+
+        .flash-message.error {
+            background: #FFEBEE;
+            color: #C62828;
+            border-left: 4px solid #C62828;
+        }
+
+        .flash-message.warning {
+            background: #FFF3E0;
+            color: #E65100;
+            border-left: 4px solid #E65100;
+        }
+
+        .flash-message.info {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-left: 4px solid #0D47A1;
+        }
+
+        .flash-message .flash-icon {
+            font-size: 22px;
+        }
+
+        .flash-message .flash-close {
+            margin-left: auto;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            color: inherit;
+        }
+
+        .flash-message .flash-close:hover {
+            opacity: 1;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 1024px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .social-section {
+                grid-column: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .contact-header h1 {
+                font-size: 28px;
+            }
+
+            .contact-header p {
+                font-size: 14px;
+            }
+
+            .contact-info-card,
+            .contact-form-card {
+                padding: 24px 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .social-icons {
+                gap: 12px;
+            }
+
+            .social-icons .social-link {
+                width: 48px;
+                height: 48px;
+                font-size: 18px;
+            }
+
+            .map-card iframe {
+                min-height: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .contact-header h1 {
+                font-size: 24px;
+            }
+
+            .contact-info-card,
+            .contact-form-card {
+                padding: 18px 14px;
+            }
+
+            .contact-info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .contact-info-item .info-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+
+            .contact-info-item .info-content .info-value {
+                font-size: 13px;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                font-size: 13px;
+                padding: 10px 14px;
+            }
+
+            .btn-submit {
+                font-size: 14px;
+                padding: 12px;
+            }
+
+            .social-icons .social-link {
+                width: 44px;
+                height: 44px;
+                font-size: 16px;
+            }
+
+            .map-card iframe {
+                min-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    {% include 'sidebar_nav.html' %}
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <div class="contact-container">
+
+            <!-- ===== HEADER ===== -->
+            <div class="contact-header">
+                <h1>📬 <span>Contact Us</span></h1>
+                <p>Have questions or feedback? We'd love to hear from you!</p>
+            </div>
+
+            <!-- ===== FLASH MESSAGES ===== -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            <span class="flash-icon">
+                                {% if category == 'success' %}✅
+                                {% elif category == 'error' %}❌
+                                {% elif category == 'warning' %}⚠️
+                                {% else %}ℹ️{% endif %}
+                            </span>
+                            <span>{{ message }}</span>
+                            <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- ===== CONTACT GRID ===== -->
+            <div class="contact-grid">
+
+                <!-- ===== CONTACT INFO ===== -->
+                <div class="contact-info-card">
+                    <div class="card-title">
+                        <i class="fa-solid fa-address-card"></i>
+                        Get in Touch
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="info-icon">
+                            <i class="fa-regular fa-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Email Address</div>
+                            <div class="info-value">
+                                <a href="mailto:support@pantrypulse.com">support@pantrypulse.com</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="info-icon">
+                            <i class="fa-regular fa-phone"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Phone Number</div>
+                            <div class="info-value">
+                                <a href="tel:+919876543210">+91 98765 43210</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="info-icon">
+                            <i class="fa-regular fa-location-dot"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Address</div>
+                            <div class="info-value">Chennai, Tamil Nadu</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="info-icon">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Working Hours</div>
+                            <div class="info-value">9:00 AM - 6:00 PM (IST)</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="info-icon">
+                            <i class="fa-regular fa-calendar"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Support Days</div>
+                            <div class="info-value">Monday - Friday</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== MAP ===== -->
+                <div class="map-card">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d248756.11683712388!2d80.09862746337914!3d13.047487214103476!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5265ea4f7d3361%3A0x6e2d5b5f4b8f9e8d!2sChennai%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+
+                <!-- ===== CONTACT FORM ===== -->
+                <div class="contact-form-card">
+                    <div class="form-title">
+                        <i class="fa-regular fa-pen-to-square"></i> Send Us a Message
+                    </div>
+                    <div class="form-subtitle">
+                        We'll get back to you within 24 hours
+                    </div>
+
+                    <form method="POST" action="{{ url_for('contact') }}" id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fa-regular fa-user"></i> Full Name <span class="required">*</span></label>
+                                <input type="text" name="name" placeholder="Enter your full name" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-regular fa-envelope"></i> Email Address <span class="required">*</span></label>
+                                <input type="email" name="email" placeholder="Enter your email address" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fa-regular fa-tag"></i> Subject <span class="required">*</span></label>
+                            <input type="text" name="subject" placeholder="What is this regarding?" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fa-regular fa-message"></i> Message <span class="required">*</span></label>
+                            <textarea name="message" placeholder="Describe your query or feedback in detail..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <i class="fa-regular fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+
+                <!-- ===== SOCIAL MEDIA ===== -->
+                <div class="social-section">
+                    <div class="social-title">
+                        <i class="fa-regular fa-share-nodes"></i> Connect With Us
+                    </div>
+                    <div class="social-icons">
+                        <a href="#" class="social-link facebook" target="_blank">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link twitter" target="_blank">
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link instagram" target="_blank">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link youtube" target="_blank">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+                        <a href="#" class="social-link linkedin" target="_blank">
+                            <i class="fa-brands fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="social-link whatsapp" target="_blank">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ============================================================
+    SCRIPTS
+    ============================================================ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set active nav link
+            document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+                if (link.getAttribute('href') === window.location.pathname) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Form validation
+            var form = document.getElementById('contactForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    var name = form.querySelector('input[name="name"]');
+                    var email = form.querySelector('input[name="email"]');
+                    var subject = form.querySelector('input[name="subject"]');
+                    var message = form.querySelector('textarea[name="message"]');
+                    
+                    if (!name.value.trim()) {
+                        e.preventDefault();
+                        alert('⚠️ Please enter your full name!');
+                        name.focus();
+                        name.style.borderColor = '#C62828';
+                        return;
+                    }
+                    
+                    if (!email.value.trim()) {
+                        e.preventDefault();
+                        alert('⚠️ Please enter your email address!');
+                        email.focus();
+                        email.style.borderColor = '#C62828';
+                        return;
+                    }
+                    
+                    if (!subject.value.trim()) {
+                        e.preventDefault();
+                        alert('⚠️ Please enter a subject!');
+                        subject.focus();
+                        subject.style.borderColor = '#C62828';
+                        return;
+                    }
+                    
+                    if (!message.value.trim()) {
+                        e.preventDefault();
+                        alert('⚠️ Please enter your message!');
+                        message.focus();
+                        message.style.borderColor = '#C62828';
+                        return;
+                    }
+                    
+                    // Show loading state
+                    var btn = document.getElementById('submitBtn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+                });
+            }
+
+            // Clear error styles on focus
+            document.querySelectorAll('#contactForm input, #contactForm textarea').forEach(function(el) {
+                el.addEventListener('focus', function() {
+                    this.style.borderColor = '';
+                });
+            });
+
+            // Auto-hide flash messages after 5 seconds
+            var flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(msg) {
+                setTimeout(function() {
+                    if (msg) {
+                        msg.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        msg.style.opacity = '0';
+                        msg.style.transform = 'translateY(-10px)';
+                        setTimeout(function() {
+                            if (msg.parentNode) {
+                                msg.remove();
+                            }
+                        }, 500);
+                    }
+                }, 5000);
+            });
+        });
+    </script>
+
+</body>
+</html>

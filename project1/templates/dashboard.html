@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | PantryPulse</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        .dashboard-container { padding: 20px 0; }
+
+        /* ===== HERO ===== */
+        .dash-hero {
+            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 40%, #43A047 100%);
+            border-radius: 16px;
+            padding: 40px 50px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dash-hero::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            pointer-events: none;
+        }
+
+        .dash-hero .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .dash-hero h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .dash-hero h1 span {
+            color: #FFD54F;
+        }
+
+        .dash-hero p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+        }
+
+        .dash-hero .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .dash-hero .hero-stats .stat {
+            color: white;
+        }
+
+        .dash-hero .hero-stats .stat .number {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .dash-hero .hero-stats .stat .label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* ===== SUSTAINABILITY SCORE ===== */
+        .sustainability-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            border: 1px solid #e8f5e9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .sustainability-card .score-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 4px 20px rgba(46, 125, 50, 0.3);
+        }
+
+        .sustainability-card .score-label {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1B2A1E;
+        }
+
+        .sustainability-card .score-sub {
+            font-size: 14px;
+            color: #4A6A4A;
+        }
+
+        /* ===== STATS GRID ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e8f5e9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-card .stat-icon { font-size: 28px; margin-bottom: 4px; }
+        .stat-card .stat-number { font-size: 24px; font-weight: 800; color: #2E7D32; }
+        .stat-card .stat-label { font-size: 13px; color: #4A6A4A; }
+
+        .stat-card .stat-number.danger { color: #C62828; }
+        .stat-card .stat-number.warning { color: #F57F17; }
+        .stat-card .stat-number.success { color: #2E7D32; }
+
+        /* ===== ALERTS & ACTIVITY ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 24px;
+        }
+
+        .dash-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #e8f5e9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .dash-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1B2A1E;
+            margin-bottom: 16px;
+        }
+
+        .dash-card h3 i { color: #2E7D32; margin-right: 8px; }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .alert-item.warning {
+            background: #FFF8E1;
+            border-left: 4px solid #F57F17;
+            color: #E65100;
+        }
+
+        .alert-item.success {
+            background: #E8F5E9;
+            border-left: 4px solid #2E7D32;
+            color: #2E7D32;
+        }
+
+        .alert-item.danger {
+            background: #FFEBEE;
+            border-left: 4px solid #C62828;
+            color: #C62828;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            font-size: 14px;
+        }
+
+        .summary-item:last-child { border-bottom: none; }
+        .summary-item .label { color: #4A6A4A; }
+        .summary-item .value { font-weight: 600; color: #1B2A1E; }
+        .summary-item .value.green { color: #2E7D32; }
+        .summary-item .value.red { color: #C62828; }
+
+        /* ===== QUICK ACTIONS ===== */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .quick-action-btn {
+            padding: 10px 20px;
+            border: 1px solid #e8f5e9;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            color: #1B2A1E;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .quick-action-btn.primary { background: #2E7D32; color: white; border: none; }
+        .quick-action-btn.primary:hover { background: #1B5E20; }
+        .quick-action-btn.accent { background: #FF6B35; color: white; border: none; }
+        .quick-action-btn.accent:hover { background: #E85A28; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .dash-hero { padding: 30px 24px; text-align: center; }
+            .dash-hero .hero-stats { justify-content: center; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .stat-card .stat-number { font-size: 20px; }
+            .dash-hero h1 { font-size: 24px; }
+            .dash-hero .hero-stats .stat .number { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    {% include 'sidebar_nav.html' %}
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <div class="dashboard-container">
+
+            <!-- ===== HERO ===== -->
+            <div class="dash-hero">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-sparkles"></i> Zero Waste Revolution
+                </div>
+                <h1>Eat fresh. <span>Waste nothing.</span> Save more.</h1>
+                <p>Your household cooking co-pilot - track expiry, find recipes, save money.</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="number">{{ ((safe_count / (pantry_count + 1)) * 100)|round|int }}%</div>
+                        <div class="label">Less Food Wasted</div>
+                    </div>
+                    <div class="stat">
+                        <div class="number">₹{{ (total_value * 12)|round|int }}+</div>
+                        <div class="label">Avg. Yearly Saved</div>
+                    </div>
+                    <div class="stat">
+                        <div class="number">100%</div>
+                        <div class="label">Automated Tracking</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SUSTAINABILITY SCORE ===== -->
+            <div class="sustainability-card">
+                <div class="score-circle">{{ sustainability_score }}%</div>
+                <div class="score-label">🏆 Household Sustainability Score</div>
+                <div class="score-sub">
+                    {% if sustainability_score >= 80 %}
+                        🌟 Excellent! You're doing great!
+                    {% elif sustainability_score >= 60 %}
+                        👍 Good! Keep improving!
+                    {% elif sustainability_score >= 40 %}
+                        📈 You can do better!
+                    {% else %}
+                        ⚠️ Start tracking your food waste!
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ===== STATS ===== -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-number">{{ pantry_count }}</div>
+                    <div class="stat-label">Pantry Items</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-number success">{{ safe_count }}</div>
+                    <div class="stat-label">Safe</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🟡</div>
+                    <div class="stat-number warning">{{ expiring_count }}</div>
+                    <div class="stat-label">Expiring Soon</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">❌</div>
+                    <div class="stat-number danger">{{ expired_count }}</div>
+                    <div class="stat-label">Expired</div>
+                </div>
+            </div>
+
+            <!-- ===== GRID ===== -->
+            <div class="dashboard-grid">
+
+                <!-- ===== EXPIRY NOTIFICATIONS ===== -->
+                <div class="dash-card">
+                    <h3><i class="fa-solid fa-bell"></i> Expiry Alerts</h3>
+                    {% if expiring_notifications %}
+                        {% for item in expiring_notifications %}
+                        <div class="alert-item 
+                            {% if item[2] <= 0 %}danger
+                            {% elif item[2] <= 3 %}warning
+                            {% else %}success{% endif %}">
+                            <span>
+                                {% if item[2] <= 0 %}🔴
+                                {% elif item[2] <= 3 %}🟡
+                                {% else %}🟢{% endif %}
+                            </span>
+                            <div>
+                                <strong>{{ item[0] }}</strong>
+                                {% if item[2] <= 0 %}
+                                    - Expired!
+                                {% elif item[2] == 0 %}
+                                    - Expires Today!
+                                {% else %}
+                                    - {{ item[2] }} days left
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert-item success">
+                            <span>✅</span>
+                            <div>No items expiring soon. Great job! 🎉</div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- ===== SUMMARY ===== -->
+                <div class="dash-card">
+                    <h3><i class="fa-solid fa-receipt"></i> Recent Summary</h3>
+                    <div class="summary-item">
+                        <span class="label">👤 Logged in as</span>
+                        <span class="value">{{ session["fullname"] }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">📦 Pantry items</span>
+                        <span class="value green">{{ pantry_count }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">💰 Total value</span>
+                        <span class="value green">₹{{ "%.0f"|format(total_value) }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">🟡 Expiring soon</span>
+                        <span class="value {% if expiring_count > 0 %}red{% else %}green{% endif %}">
+                            {{ expiring_count }}
+                        </span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">📋 Purchase logs</span>
+                        <span class="value green">{{ total_logs }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== QUICK ACTIONS ===== -->
+            <div class="quick-actions">
+                <a href="{{ url_for('purchase') }}" class="quick-action-btn primary">
+                    <i class="fa-solid fa-receipt"></i> Log Purchase
+                </a>
+                <a href="{{ url_for('pantry') }}" class="quick-action-btn">
+                    <i class="fa-solid fa-list"></i> View Pantry
+                </a>
+                <a href="{{ url_for('expiry_alerts') }}" class="quick-action-btn">
+                    <i class="fa-solid fa-clock"></i> Check Expiry
+                </a>
+                <a href="{{ url_for('recipes') }}" class="quick-action-btn accent">
+                    <i class="fa-solid fa-utensils"></i> Find Recipes
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var navLinks = document.querySelectorAll('.sidebar-nav a');
+            for (var i = 0; i < navLinks.length; i++) {
+                if (navLinks[i].getAttribute('href') === window.location.pathname) {
+                    navLinks[i].classList.add('active');
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

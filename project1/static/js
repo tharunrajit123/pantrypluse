@@ -1,0 +1,161 @@
+// ============================================================
+// PANTRYPULSE - MAIN JAVASCRIPT
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🍽️ PantryPulse loaded successfully!');
+    
+    // ============================================================
+    // NAVBAR SCROLL EFFECT
+    // ============================================================
+    
+    const navbar = document.getElementById('navbar');
+    if (navbar) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    }
+    
+    // ============================================================
+    // MOBILE MENU TOGGLE
+    // ============================================================
+    
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    if (menuToggle && mobileMenu) {
+        menuToggle.addEventListener('click', function() {
+            mobileMenu.classList.toggle('open');
+            const icon = this.querySelector('i');
+            if (icon) {
+                if (mobileMenu.classList.contains('open')) {
+                    icon.className = 'fa-solid fa-xmark';
+                } else {
+                    icon.className = 'fa-solid fa-bars';
+                }
+            }
+        });
+        
+        // Close mobile menu on link click
+        document.querySelectorAll('.mobile-menu a').forEach(link => {
+            link.addEventListener('click', function() {
+                mobileMenu.classList.remove('open');
+                const icon = menuToggle.querySelector('i');
+                if (icon) {
+                    icon.className = 'fa-solid fa-bars';
+                }
+            });
+        });
+    }
+    
+    // ============================================================
+    // AUTO-FOCUS ON LOGIN EMAIL
+    // ============================================================
+    
+    const emailInput = document.getElementById('email');
+    if (emailInput) {
+        emailInput.focus();
+    }
+    
+    // ============================================================
+    // PASSWORD TOGGLE
+    // ============================================================
+    
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            const icon = this.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            }
+        });
+    }
+    
+    // ============================================================
+    // SET DEFAULT DATES ON FORMS
+    // ============================================================
+    
+    const today = new Date().toISOString().split('T')[0];
+    
+    const purchaseDate = document.getElementById('purchase_date');
+    if (purchaseDate) {
+        purchaseDate.value = today;
+    }
+    
+    const expiryDateInput = document.getElementById('expiry_date');
+    if (expiryDateInput) {
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 7);
+        expiryDateInput.value = expiryDate.toISOString().split('T')[0];
+    }
+    
+    console.log('✅ PantryPulse initialized successfully!');
+});
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+
+// Format date to readable format
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    });
+}
+
+// Calculate days between two dates
+function daysBetween(date1, date2) {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    const diffTime = Math.abs(d2 - d1);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+// Get status color based on days left
+function getStatusColor(daysLeft) {
+    if (daysLeft < 0) return 'expired';
+    if (daysLeft === 0) return 'urgent';
+    if (daysLeft <= 3) return 'urgent';
+    if (daysLeft <= 7) return 'expiring';
+    return 'safe';
+}
+
+// Show flash message
+function showFlash(message, type = 'info') {
+    const container = document.getElementById('flashContainer');
+    if (!container) return;
+    
+    const flashDiv = document.createElement('div');
+    flashDiv.className = 'flash-message ' + type;
+    
+    const icons = {
+        success: '✅',
+        error: '❌',
+        info: 'ℹ️'
+    };
+    
+    flashDiv.innerHTML = (icons[type] || 'ℹ️') + ' ' + message;
+    container.appendChild(flashDiv);
+    
+    setTimeout(() => {
+        flashDiv.style.transition = 'opacity 0.5s ease';
+        flashDiv.style.opacity = '0';
+        setTimeout(() => {
+            if (flashDiv.parentNode) {
+                flashDiv.remove();
+            }
+        }, 500);
+    }, 5000);
+}

@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantry List | PantryPulse</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* ============================================================
+           GLOBAL
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('{{ url_for('static', filename='images/background.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: #1B2A1E;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.88);
+            z-index: 0;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        .pantry-container { 
+            padding: 20px 0; 
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .pantry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .pantry-header .header-left h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1B2A1E;
+            letter-spacing: -1px;
+        }
+
+        .pantry-header .header-left h1 span {
+            color: #2E7D32;
+            position: relative;
+        }
+
+        .pantry-header .header-left h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2E7D32, #4CAF50);
+            border-radius: 4px;
+        }
+
+        .pantry-header .header-left .pantry-subtitle {
+            color: #4A6A4A;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .pantry-header .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .pantry-header .pantry-count {
+            font-size: 14px;
+            color: #4A6A4A;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pantry-header .pantry-count i {
+            color: #2E7D32;
+            font-size: 16px;
+        }
+
+        /* ============================================================
+           CONTROLS
+           ============================================================ */
+        .pantry-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .pantry-controls .search-box {
+            flex: 1;
+            display: flex;
+            gap: 10px;
+            min-width: 200px;
+        }
+
+        .pantry-controls .search-box input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid rgba(0, 0, 0, 0.06);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            min-width: 150px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .pantry-controls .search-box input:focus {
+            border-color: #2E7D32;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.08);
+            background: white;
+        }
+
+        .pantry-controls .search-box input::placeholder {
+            color: #A0A0A0;
+        }
+
+        .pantry-controls .search-box .btn-search {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pantry-controls .search-box .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.3);
+        }
+
+        .pantry-controls .filter-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pantry-controls .filter-btn {
+            padding: 8px 18px;
+            border: 2px solid rgba(0, 0, 0, 0.06);
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #4A6A4A;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pantry-controls .filter-btn:hover {
+            border-color: #2E7D32;
+            color: #2E7D32;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.1);
+        }
+
+        .pantry-controls .filter-btn.active {
+            background: #2E7D32;
+            color: white;
+            border-color: #2E7D32;
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.25);
+        }
+
+        .pantry-controls .filter-btn .count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .pantry-controls .filter-btn.active .count {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .pantry-controls .btn-add {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #FF6B35, #FF8A65);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(255, 107, 53, 0.2);
+        }
+
+        .pantry-controls .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3);
+        }
+
+        /* ============================================================
+           TABLE
+           ============================================================ */
+        .table-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow-x: auto;
+        }
+
+        .pantry-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 900px;
+        }
+
+        .pantry-table thead {
+            background: linear-gradient(135deg, #F5F9F5, #E8F5E9);
+        }
+
+        .pantry-table th {
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 700;
+            color: #1B2A1E;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border-bottom: 2px solid rgba(46, 125, 50, 0.1);
+            white-space: nowrap;
+        }
+
+        .pantry-table th i {
+            color: #2E7D32;
+            margin-right: 6px;
+            font-size: 12px;
+        }
+
+        .pantry-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            color: #1B2A1E;
+            vertical-align: middle;
+        }
+
+        .pantry-table tbody tr {
+            transition: all 0.3s ease;
+            animation: fadeInRow 0.4s ease;
+        }
+
+        @keyframes fadeInRow {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .pantry-table tbody tr:hover {
+            background: rgba(46, 125, 50, 0.04);
+        }
+
+        .pantry-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .pantry-table .product-name {
+            font-weight: 600;
+            color: #1B2A1E;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pantry-table .product-name .product-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #E8F5E9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #2E7D32;
+            flex-shrink: 0;
+        }
+
+        .pantry-table .category-tag {
+            background: #F5F9F5;
+            padding: 3px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            color: #4A6A4A;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        /* ===== STATUS BADGES ===== */
+        .status-badge {
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-badge.safe {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-badge.expiring {
+            background: #FFF8E1;
+            color: #F57F17;
+        }
+
+        .status-badge.urgent {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .status-badge.expired {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .days-safe {
+            color: #2E7D32;
+            font-weight: 600;
+        }
+
+        .days-expiring {
+            color: #F57F17;
+            font-weight: 600;
+        }
+
+        .days-urgent {
+            color: #C62828;
+            font-weight: 600;
+        }
+
+        .days-expired {
+            color: #C62828;
+            font-weight: 600;
+        }
+
+        /* ===== ACTION BUTTONS ===== */
+        .action-btns {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .action-btns .btn {
+            padding: 5px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .action-btns .btn-recipe {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .action-btns .btn-recipe:hover {
+            background: #2E7D32;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        }
+
+        .action-btns .btn-eat {
+            background: linear-gradient(135deg, #FF6B35, #FF8A65);
+            color: white;
+        }
+
+        .action-btns .btn-eat:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3);
+        }
+
+        .action-btns .btn-discard {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .action-btns .btn-discard:hover {
+            background: #C62828;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(198, 40, 40, 0.3);
+        }
+
+        .action-btns .btn-edit {
+            background: #E3F2FD;
+            color: #0D47A1;
+        }
+
+        .action-btns .btn-edit:hover {
+            background: #0D47A1;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* ============================================================
+           TOAST NOTIFICATION
+           ============================================================ */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            z-index: 9999;
+            animation: slideInRight 0.5s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast-notification.success {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+        }
+
+        .toast-notification.error {
+            background: linear-gradient(135deg, #C62828, #D32F2F);
+        }
+
+        .toast-notification.warning {
+            background: linear-gradient(135deg, #E65100, #F57C00);
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast-notification .toast-close {
+            margin-left: 12px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+        }
+
+        .toast-notification .toast-close:hover {
+            opacity: 1;
+        }
+
+        /* ============================================================
+           CONFIRM DIALOG
+           ============================================================ */
+        .confirm-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-overlay.show {
+            display: flex;
+        }
+
+        .confirm-overlay .confirm-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            animation: slideUp 0.4s ease;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .confirm-overlay .confirm-box .confirm-icon {
+            font-size: 56px;
+            margin-bottom: 12px;
+        }
+
+        .confirm-overlay .confirm-box h3 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #1B2A1E;
+        }
+
+        .confirm-overlay .confirm-box p {
+            color: #4A6A4A;
+            margin-bottom: 24px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .confirm-overlay .confirm-box .confirm-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .confirm-overlay .confirm-box .btn-confirm-yes {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            font-size: 15px;
+        }
+
+        .confirm-overlay .confirm-box .btn-confirm-yes:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .confirm-overlay .confirm-box .btn-confirm-yes.eat-btn {
+            background: linear-gradient(135deg, #FF6B35, #FF8A65);
+        }
+
+        .confirm-overlay .confirm-box .btn-confirm-yes.discard-btn {
+            background: linear-gradient(135deg, #C62828, #D32F2F);
+        }
+
+        .confirm-overlay .confirm-box .btn-confirm-no {
+            padding: 12px 32px;
+            background: #f5f5f5;
+            color: #4A6A4A;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .confirm-overlay .confirm-box .btn-confirm-no:hover {
+            background: #e8e8e8;
+        }
+
+        /* ============================================================
+           EMPTY STATE
+           ============================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 72px;
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+
+        .empty-state h2 {
+            font-size: 26px;
+            color: #1B2A1E;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: #4A6A4A;
+            font-size: 15px;
+            margin-bottom: 24px;
+        }
+
+        .empty-state .empty-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .empty-state .empty-actions .btn-primary {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.2);
+        }
+
+        .empty-state .empty-actions .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(46, 125, 50, 0.3);
+        }
+
+        .empty-state .empty-actions .btn-secondary {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #FF6B35, #FF8A65);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(255, 107, 53, 0.2);
+        }
+
+        .empty-state .empty-actions .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(255, 107, 53, 0.3);
+        }
+
+        /* ============================================================
+           FLASH MESSAGES
+           ============================================================ */
+        .flash-message {
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.4s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .flash-message.success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border-left: 4px solid #2E7D32;
+        }
+
+        .flash-message.error {
+            background: #FFEBEE;
+            color: #C62828;
+            border-left: 4px solid #C62828;
+        }
+
+        .flash-message.warning {
+            background: #FFF3E0;
+            color: #E65100;
+            border-left: 4px solid #E65100;
+        }
+
+        .flash-message.info {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-left: 4px solid #0D47A1;
+        }
+
+        .flash-message .flash-icon {
+            font-size: 22px;
+        }
+
+        .flash-message .flash-close {
+            margin-left: auto;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            color: inherit;
+        }
+
+        .flash-message .flash-close:hover {
+            opacity: 1;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 1024px) {
+            .pantry-controls {
+                padding: 10px 14px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .pantry-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .pantry-header .header-right {
+                width: 100%;
+            }
+
+            .pantry-header .pantry-count {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .pantry-controls {
+                flex-direction: column;
+                padding: 12px;
+            }
+
+            .pantry-controls .search-box {
+                width: 100%;
+            }
+
+            .pantry-controls .filter-btns {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .pantry-controls .btn-add {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .pantry-table th,
+            .pantry-table td {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+
+            .action-btns .btn {
+                font-size: 10px;
+                padding: 3px 10px;
+            }
+
+            .confirm-overlay .confirm-box {
+                padding: 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .pantry-header .header-left h1 {
+                font-size: 26px;
+            }
+
+            .pantry-table th,
+            .pantry-table td {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .action-btns .btn {
+                font-size: 9px;
+                padding: 2px 8px;
+            }
+
+            .empty-state {
+                padding: 40px 16px;
+            }
+
+            .empty-state .empty-icon {
+                font-size: 48px;
+            }
+
+            .empty-state h2 {
+                font-size: 20px;
+            }
+
+            .confirm-overlay .confirm-box {
+                padding: 24px;
+            }
+
+            .confirm-overlay .confirm-box h3 {
+                font-size: 18px;
+            }
+
+            .pantry-controls .filter-btns {
+                gap: 4px;
+            }
+
+            .pantry-controls .filter-btn {
+                font-size: 10px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    {% include 'sidebar_nav.html' %}
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <div class="pantry-container">
+
+            <!-- ===== HEADER ===== -->
+            <div class="pantry-header">
+                <div class="header-left">
+                    <h1>📦 <span>Pantry List</span></h1>
+                    <div class="pantry-subtitle">Your real-time inventory with freshness tracking</div>
+                </div>
+                <div class="header-right">
+                    <span class="pantry-count" id="pantryCount">
+                        <i class="fa-solid fa-box"></i>
+                        {{ items|length if items else 0 }} items
+                    </span>
+                </div>
+            </div>
+
+            <!-- ===== CONTROLS ===== -->
+            <div class="pantry-controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 Search products..." onkeyup="filterTable()">
+                    <button class="btn-search" onclick="filterTable()">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+                <div class="filter-btns">
+                    <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">
+                        📋 All <span class="count" id="countAll">{{ items|length if items else 0 }}</span>
+                    </button>
+                    <button class="filter-btn" data-filter="safe" onclick="setFilter('safe', this)">
+                        🟢 Safe <span class="count" id="countSafe">0</span>
+                    </button>
+                    <button class="filter-btn" data-filter="near-expiry" onclick="setFilter('near-expiry', this)">
+                        🟡 Near Expiry <span class="count" id="countNear">0</span>
+                    </button>
+                    <button class="filter-btn" data-filter="expired" onclick="setFilter('expired', this)">
+                        🔴 Expired <span class="count" id="countExpired">0</span>
+                    </button>
+                </div>
+                <a href="{{ url_for('add_pantry') }}" class="btn-add">
+                    <i class="fa-solid fa-plus"></i> Add Item
+                </a>
+            </div>
+
+            <!-- ===== FLASH MESSAGES ===== -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}" id="flashMessage">
+                            <span class="flash-icon">
+                                {% if category == 'success' %}✅
+                                {% elif category == 'error' %}❌
+                                {% elif category == 'warning' %}⚠️
+                                {% else %}ℹ️{% endif %}
+                            </span>
+                            <span>{{ message }}</span>
+                            <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- ===== TABLE ===== -->
+            {% if items %}
+            <div class="table-wrapper">
+                <table class="pantry-table" id="pantryTable">
+                    <thead>
+                        <tr>
+                            <th><i class="fa-solid fa-tag"></i> Product</th>
+                            <th><i class="fa-solid fa-folder"></i> Category</th>
+                            <th><i class="fa-regular fa-calendar-plus"></i> Purchased</th>
+                            <th><i class="fa-regular fa-calendar"></i> Expires</th>
+                            <th><i class="fa-regular fa-clock"></i> Days Left</th>
+                            <th><i class="fa-regular fa-circle-check"></i> Status</th>
+                            <th><i class="fa-solid fa-bolt"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        {% set days = (item.expiry_date - today).days %}
+                        {% if days < 0 %}
+                            {% set status = 'expired' %}
+                        {% elif days <= 3 %}
+                            {% set status = 'near-expiry' %}
+                        {% else %}
+                            {% set status = 'safe' %}
+                        {% endif %}
+                        <tr data-status="{{ status }}" id="row-{{ item.pantry_id }}">
+                            <td>
+                                <div class="product-name">
+                                    <span class="product-icon">
+                                        {% if item.category == 'Dairy' %}🥛
+                                        {% elif item.category == 'Fruits' %}🍎
+                                        {% elif item.category == 'Vegetables' %}🥬
+                                        {% elif item.category == 'Grains' %}🌾
+                                        {% elif item.category == 'Spices' %}🌶️
+                                        {% elif item.category == 'Oils' %}🫒
+                                        {% elif item.category == 'Bakery' %}🍞
+                                        {% elif item.category == 'Meat' %}🥩
+                                        {% else %}📦{% endif %}
+                                    </span>
+                                    {{ item.product_name }}
+                                </div>
+                            </td>
+                            <td><span class="category-tag">{{ item.category if item.category else 'Pantry' }}</span></td>
+                            <td>{{ item.purchase_date.strftime('%d %b %Y') if item.purchase_date else 'N/A' }}</td>
+                            <td>{{ item.expiry_date.strftime('%d %b %Y') if item.expiry_date else 'N/A' }}</td>
+                            <td>
+                                {% if days < 0 %}
+                                    <span class="days-expired"><i class="fa-solid fa-circle-exclamation"></i> Expired</span>
+                                {% elif days == 0 %}
+                                    <span class="days-urgent"><i class="fa-solid fa-circle-exclamation"></i> Today!</span>
+                                {% elif days <= 3 %}
+                                    <span class="days-urgent"><i class="fa-regular fa-clock"></i> {{ days }} days</span>
+                                {% elif days <= 7 %}
+                                    <span class="days-expiring"><i class="fa-regular fa-clock"></i> {{ days }} days</span>
+                                {% else %}
+                                    <span class="days-safe"><i class="fa-regular fa-clock"></i> {{ days }} days</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if days < 0 %}
+                                    <span class="status-badge expired"><i class="fa-solid fa-xmark"></i> Expired</span>
+                                {% elif days == 0 %}
+                                    <span class="status-badge urgent"><i class="fa-solid fa-triangle-exclamation"></i> Expires Today</span>
+                                {% elif days <= 3 %}
+                                    <span class="status-badge urgent"><i class="fa-solid fa-clock"></i> {{ days }}d left</span>
+                                {% elif days <= 7 %}
+                                    <span class="status-badge expiring"><i class="fa-solid fa-clock"></i> {{ days }}d left</span>
+                                {% else %}
+                                    <span class="status-badge safe"><i class="fa-solid fa-check"></i> Safe</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn btn-recipe" onclick="findRecipe('{{ item.product_name }}')">
+                                        <i class="fa-solid fa-utensils"></i>
+                                    </button>
+                                    <button class="btn btn-eat" onclick="confirmAction('eat', {{ item.pantry_id }}, '{{ item.product_name }}')">
+                                        <i class="fa-solid fa-utensil-spoon"></i> Eat
+                                    </button>
+                                    <button class="btn btn-discard" onclick="confirmAction('discard', {{ item.pantry_id }}, '{{ item.product_name }}')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <!-- ===== EMPTY STATE ===== -->
+            <div class="empty-state">
+                <div class="empty-icon">📦</div>
+                <h2>Your Pantry is Empty</h2>
+                <p>Start adding items to your pantry by uploading a bill or adding manually.</p>
+                <div class="empty-actions">
+                    <a href="{{ url_for('purchase') }}" class="btn-primary">
+                        <i class="fa-solid fa-upload"></i> Upload Bill
+                    </a>
+                    <a href="{{ url_for('add_pantry') }}" class="btn-secondary">
+                        <i class="fa-solid fa-plus"></i> Add Manually
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- ===== CONFIRM DIALOG ===== -->
+    <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-box">
+            <div class="confirm-icon" id="confirmIcon">🍽️</div>
+            <h3 id="confirmTitle">Eat This Item?</h3>
+            <p id="confirmMessage">Mark this item as consumed and remove it from your pantry.</p>
+            <div class="confirm-actions">
+                <button class="btn-confirm-yes" id="confirmYesBtn">Yes, Do it!</button>
+                <button class="btn-confirm-no" onclick="closeConfirm()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    SCRIPTS
+    ============================================================ -->
+    <script>
+        // ============================================================
+        // DATA
+        // ============================================================
+        var currentFilter = 'all';
+
+        // ============================================================
+        // SEARCH FILTER
+        // ============================================================
+        function filterTable() {
+            var input = document.getElementById('searchInput');
+            var filter = input.value.toLowerCase();
+            var table = document.getElementById('pantryTable');
+            if (!table) return;
+            var rows = table.getElementsByTagName('tr');
+
+            for (var i = 1; i < rows.length; i++) {
+                var cells = rows[i].getElementsByTagName('td');
+                var found = false;
+                for (var j = 0; j < cells.length - 1; j++) {
+                    var text = cells[j].textContent.toLowerCase();
+                    if (text.indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                var status = rows[i].getAttribute('data-status');
+                var statusVisible = true;
+                if (currentFilter !== 'all') {
+                    statusVisible = (status === currentFilter);
+                }
+                rows[i].style.display = (found && statusVisible) ? '' : 'none';
+            }
+        }
+
+        // ============================================================
+        // STATUS FILTER
+        // ============================================================
+        function setFilter(filter, btn) {
+            currentFilter = filter;
+            
+            var buttons = document.querySelectorAll('.filter-btn');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active');
+            }
+            btn.classList.add('active');
+            
+            var table = document.getElementById('pantryTable');
+            if (!table) return;
+            var rows = table.getElementsByTagName('tr');
+            var searchInput = document.getElementById('searchInput');
+            var searchFilter = searchInput ? searchInput.value.toLowerCase() : '';
+            
+            var counts = { all: 0, safe: 0, near: 0, expired: 0 };
+            
+            for (var i = 1; i < rows.length; i++) {
+                var status = rows[i].getAttribute('data-status');
+                var statusMatch = (filter === 'all' || status === filter);
+                
+                var cells = rows[i].getElementsByTagName('td');
+                var searchMatch = true;
+                if (searchFilter) {
+                    searchMatch = false;
+                    for (var j = 0; j < cells.length - 1; j++) {
+                        var text = cells[j].textContent.toLowerCase();
+                        if (text.indexOf(searchFilter) > -1) {
+                            searchMatch = true;
+                            break;
+                        }
+                    }
+                }
+                
+                var visible = (statusMatch && searchMatch);
+                rows[i].style.display = visible ? '' : 'none';
+                
+                if (visible) {
+                    counts.all++;
+                    if (status === 'safe') counts.safe++;
+                    else if (status === 'near-expiry') counts.near++;
+                    else if (status === 'expired') counts.expired++;
+                }
+            }
+            
+            // Update counts
+            document.getElementById('countAll').textContent = counts.all;
+            document.getElementById('countSafe').textContent = counts.safe;
+            document.getElementById('countNear').textContent = counts.near;
+            document.getElementById('countExpired').textContent = counts.expired;
+            
+            // Update total count
+            document.getElementById('pantryCount').innerHTML = '<i class="fa-solid fa-box"></i> ' + counts.all + ' items';
+        }
+
+        // ============================================================
+        // FIND RECIPE
+        // ============================================================
+        function findRecipe(productName) {
+            window.location.href = "{{ url_for('recipes') }}?search=" + encodeURIComponent(productName);
+        }
+
+        // ============================================================
+        // CONFIRM ACTION
+        // ============================================================
+        var pendingAction = null;
+        var pendingItemId = null;
+
+        function confirmAction(action, itemId, productName) {
+            pendingAction = action;
+            pendingItemId = itemId;
+            
+            var overlay = document.getElementById('confirmOverlay');
+            var icon = document.getElementById('confirmIcon');
+            var title = document.getElementById('confirmTitle');
+            var message = document.getElementById('confirmMessage');
+            var yesBtn = document.getElementById('confirmYesBtn');
+            
+            if (action === 'eat') {
+                icon.textContent = '🍽️';
+                title.textContent = 'Eat This Item?';
+                message.textContent = 'Mark "' + productName + '" as consumed and remove it from your pantry.';
+                yesBtn.textContent = 'Yes, Eat it!';
+                yesBtn.className = 'btn-confirm-yes eat-btn';
+            } else {
+                icon.textContent = '🗑️';
+                title.textContent = 'Discard This Item?';
+                message.textContent = 'Remove "' + productName + '" from your pantry as wasted.';
+                yesBtn.textContent = 'Yes, Discard it!';
+                yesBtn.className = 'btn-confirm-yes discard-btn';
+            }
+            
+            overlay.classList.add('show');
+        }
+
+        function closeConfirm() {
+            document.getElementById('confirmOverlay').classList.remove('show');
+            pendingAction = null;
+            pendingItemId = null;
+        }
+
+        // ============================================================
+        // SHOW TOAST
+        // ============================================================
+        function showToast(message, type) {
+            var toast = document.createElement('div');
+            toast.className = 'toast-notification ' + type;
+            
+            var icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️';
+            toast.innerHTML = `
+                <span>${icon} ${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(function() {
+                if (toast.parentNode) {
+                    toast.style.transition = 'opacity 0.5s ease';
+                    toast.style.opacity = '0';
+                    setTimeout(function() {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 500);
+                }
+            }, 5000);
+        }
+
+        // ============================================================
+        // UPDATE PANTRY COUNT
+        // ============================================================
+        function updatePantryCount() {
+            var rows = document.querySelectorAll('#pantryTable tbody tr');
+            var count = rows.length;
+            document.getElementById('pantryCount').innerHTML = '<i class="fa-solid fa-box"></i> ' + count + ' items';
+            document.getElementById('countAll').textContent = count;
+            
+            // Update filter counts
+            var safe = document.querySelectorAll('#pantryTable tbody tr[data-status="safe"]').length;
+            var near = document.querySelectorAll('#pantryTable tbody tr[data-status="near-expiry"]').length;
+            var expired = document.querySelectorAll('#pantryTable tbody tr[data-status="expired"]').length;
+            
+            document.getElementById('countSafe').textContent = safe;
+            document.getElementById('countNear').textContent = near;
+            document.getElementById('countExpired').textContent = expired;
+        }
+
+        // ============================================================
+        // CONFIRM YES BUTTON - AJAX
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            var yesBtn = document.getElementById('confirmYesBtn');
+            if (yesBtn) {
+                yesBtn.addEventListener('click', function() {
+                    if (pendingAction && pendingItemId !== null) {
+                        var actionUrl = '';
+                        if (pendingAction === 'eat') {
+                            actionUrl = "{{ url_for('consume_item', pantry_id=0) }}".replace('0', pendingItemId);
+                        } else {
+                            actionUrl = "{{ url_for('remove_item', pantry_id=0) }}".replace('0', pendingItemId);
+                        }
+                        
+                        yesBtn.textContent = 'Processing...';
+                        yesBtn.disabled = true;
+                        
+                        fetch(actionUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(function(response) {
+                            return response.json();
+                        })
+                        .then(function(data) {
+                            if (data.success) {
+                                var row = document.getElementById('row-' + pendingItemId);
+                                if (row) {
+                                    row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                                    row.style.opacity = '0';
+                                    row.style.transform = 'scale(0.95)';
+                                    setTimeout(function() {
+                                        row.remove();
+                                        updatePantryCount();
+                                        if (currentFilter !== 'all') {
+                                            setFilter(currentFilter, document.querySelector('.filter-btn.active'));
+                                        }
+                                    }, 300);
+                                }
+                                
+                                showToast(data.message, 'success');
+                                
+                                // Update analytics
+                                if (window.location.pathname === '/analytics') {
+                                    fetch('/get_analytics_data', {
+                                        method: 'GET',
+                                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                                    })
+                                    .then(function(response) { return response.json(); })
+                                    .then(function(data) {
+                                        if (data.success && window.updateAnalyticsUI) {
+                                            window.updateAnalyticsUI(data);
+                                        }
+                                    })
+                                    .catch(function(error) {
+                                        console.log('Analytics update error:', error);
+                                    });
+                                }
+                            } else {
+                                showToast(data.error || 'Error occurred!', 'error');
+                            }
+                            
+                            yesBtn.textContent = 'Yes, Do it!';
+                            yesBtn.disabled = false;
+                            closeConfirm();
+                        })
+                        .catch(function(error) {
+                            showToast('Error: ' + error.message, 'error');
+                            yesBtn.textContent = 'Yes, Do it!';
+                            yesBtn.disabled = false;
+                            closeConfirm();
+                        });
+                    }
+                });
+            }
+
+            // Close confirm on overlay click
+            var overlay = document.getElementById('confirmOverlay');
+            if (overlay) {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeConfirm();
+                    }
+                });
+            }
+
+            // Close confirm on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeConfirm();
+                }
+            });
+
+            // Auto-hide flash messages after 5 seconds
+            var flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(msg) {
+                setTimeout(function() {
+                    if (msg) {
+                        msg.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        msg.style.opacity = '0';
+                        msg.style.transform = 'translateY(-10px)';
+                        setTimeout(function() {
+                            if (msg.parentNode) {
+                                msg.remove();
+                            }
+                        }, 500);
+                    }
+                }, 5000);
+            });
+
+            // Initialize counts
+            setTimeout(updatePantryCount, 100);
+
+            // Navigation active state
+            var navLinks = document.querySelectorAll('.sidebar-nav a');
+            for (var i = 0; i < navLinks.length; i++) {
+                if (navLinks[i].getAttribute('href') === window.location.pathname) {
+                    navLinks[i].classList.add('active');
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

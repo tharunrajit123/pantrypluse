@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | PantryPulse</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-image: url('{{ url_for('static', filename='images/background.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.88);
+            z-index: 0;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        .analytics-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .analytics-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .analytics-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1B2A1E;
+        }
+
+        .analytics-header h1 span {
+            color: #2E7D32;
+        }
+
+        .analytics-header p {
+            color: #4A6A4A;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .analytics-header .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: #FFEBEE;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #C62828;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .analytics-header .live-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: #C62828;
+            border-radius: 50%;
+            display: inline-block;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* ===== STATS GRID ===== */
+        .analytics-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .analytics-stat {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px 24px;
+            text-align: center;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analytics-stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #2E7D32, #4CAF50);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .analytics-stat:hover::before {
+            opacity: 1;
+        }
+
+        .analytics-stat:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .analytics-stat .stat-icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .analytics-stat .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1B2A1E;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .stat-number.updated {
+            animation: numberPop 0.5s ease;
+        }
+
+        @keyframes numberPop {
+            0% { transform: scale(1.2); color: #2E7D32; }
+            100% { transform: scale(1); color: #1B2A1E; }
+        }
+
+        .analytics-stat .stat-number.green { color: #2E7D32; }
+        .analytics-stat .stat-number.red { color: #D32F2F; }
+        .analytics-stat .stat-number.orange { color: #F57C00; }
+        .analytics-stat .stat-number.blue { color: #1976D2; }
+        .analytics-stat .stat-number.purple { color: #7B1FA2; }
+
+        .analytics-stat .stat-label {
+            font-size: 13px;
+            color: #4A6A4A;
+            font-weight: 500;
+            display: block;
+            margin-top: 4px;
+        }
+
+        /* ===== MONEY STATS ===== */
+        .money-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .money-stat {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px 28px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .money-stat:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .money-stat .money-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .money-stat .money-icon.saved {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .money-stat .money-icon.wasted {
+            background: #FFEBEE;
+            color: #D32F2F;
+        }
+
+        .money-stat .money-info {
+            flex: 1;
+        }
+
+        .money-stat .money-info .money-label {
+            font-size: 13px;
+            color: #4A6A4A;
+            font-weight: 500;
+        }
+
+        .money-stat .money-info .money-amount {
+            font-size: 28px;
+            font-weight: 800;
+            transition: all 0.3s ease;
+        }
+
+        .money-stat .money-info .money-amount.saved {
+            color: #2E7D32;
+        }
+
+        .money-stat .money-info .money-amount.wasted {
+            color: #D32F2F;
+        }
+
+        .money-stat .money-info .money-sub {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* ===== CHARTS GRID ===== */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .chart-card .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1B2A1E;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-card .chart-title i {
+            color: #2E7D32;
+            font-size: 18px;
+        }
+
+        .chart-card .chart-title .badge {
+            margin-left: auto;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4A6A4A;
+            background: #F5F9F5;
+            padding: 2px 14px;
+            border-radius: 30px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 280px;
+            transition: all 0.3s ease;
+        }
+
+        .chart-wrapper.pie-chart {
+            height: 300px;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        .chart-wrapper.line-chart {
+            height: 300px;
+        }
+
+        .chart-full {
+            grid-column: 1 / -1;
+        }
+
+        .chart-full .chart-wrapper {
+            height: 300px;
+        }
+
+        /* ===== SUSTAINABILITY SCORE ===== */
+        .sustainability-score {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .sustainability-score:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .sustainability-score .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 40px;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 8px 32px rgba(46, 125, 50, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .sustainability-score:hover .score-circle {
+            transform: scale(1.05);
+        }
+
+        .sustainability-score .score-circle.updated {
+            animation: scorePop 0.6s ease;
+        }
+
+        @keyframes scorePop {
+            0% { transform: scale(1.3); }
+            50% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        .sustainability-score .score-label {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1B2A1E;
+        }
+
+        .sustainability-score .score-sub {
+            font-size: 14px;
+            color: #4A6A4A;
+            margin-top: 4px;
+        }
+
+        .sustainability-score .score-detail {
+            font-size: 13px;
+            color: #888;
+            margin-top: 8px;
+        }
+
+        /* ===== STATUS GRID ===== */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .status-item {
+            text-align: center;
+            padding: 20px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .status-item:hover {
+            transform: scale(1.03);
+        }
+
+        .status-item .status-number {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .status-item .status-label {
+            font-size: 13px;
+            color: #4A6A4A;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .status-item.green { background: #E8F5E9; }
+        .status-item.green .status-number { color: #2E7D32; }
+
+        .status-item.yellow { background: #FFF8E1; }
+        .status-item.yellow .status-number { color: #F57C00; }
+
+        .status-item.red { background: #FFEBEE; }
+        .status-item.red .status-number { color: #D32F2F; }
+
+        /* ===== CATEGORY BARS ===== */
+        .category-bar {
+            margin-bottom: 14px;
+        }
+
+        .category-bar:last-child {
+            margin-bottom: 0;
+        }
+
+        .category-bar .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #1B2A1E;
+            margin-bottom: 4px;
+        }
+
+        .category-bar .bar-label .category-name {
+            font-weight: 500;
+        }
+
+        .category-bar .bar-label .category-count {
+            color: #4A6A4A;
+            font-size: 13px;
+        }
+
+        .category-bar .bar-track {
+            height: 8px;
+            background: #E8F5E9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .category-bar .bar-track .bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .no-data-message {
+            text-align: center;
+            color: #4A6A4A;
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        .no-data-message i {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 12px;
+            color: #BDBDBD;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-full {
+                grid-column: 1;
+            }
+            .money-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .analytics-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .analytics-stat .stat-number {
+                font-size: 22px;
+            }
+
+            .chart-wrapper {
+                height: 220px;
+            }
+
+            .chart-wrapper.pie-chart {
+                height: 250px;
+                max-width: 280px;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .money-stat {
+                padding: 18px 20px;
+            }
+
+            .money-stat .money-info .money-amount {
+                font-size: 22px;
+            }
+
+            .sustainability-score .score-circle {
+                width: 110px;
+                height: 110px;
+                font-size: 32px;
+            }
+
+            .analytics-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .analytics-stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .analytics-stat {
+                padding: 14px 16px;
+            }
+
+            .analytics-stat .stat-number {
+                font-size: 18px;
+            }
+
+            .analytics-stat .stat-icon {
+                font-size: 22px;
+            }
+
+            .chart-card {
+                padding: 16px;
+            }
+
+            .chart-wrapper {
+                height: 180px;
+            }
+
+            .chart-wrapper.pie-chart {
+                height: 200px;
+                max-width: 220px;
+            }
+
+            .analytics-header h1 {
+                font-size: 24px;
+            }
+
+            .sustainability-score {
+                padding: 24px;
+            }
+
+            .sustainability-score .score-circle {
+                width: 90px;
+                height: 90px;
+                font-size: 28px;
+            }
+
+            .money-stat {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .money-stat .money-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    {% include 'sidebar_nav.html' %}
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <div class="analytics-container">
+
+            <!-- ===== HEADER ===== -->
+            <div class="analytics-header">
+                <div>
+                    <h1>📊 <span>Advanced Analytics</span></h1>
+                    <p>Track your pantry usage, spending habits, and sustainability score</p>
+                </div>
+                <div class="live-badge">
+                    <span class="dot"></span>
+                    <span>Live Updates</span>
+                    <span style="font-weight:400; color:#888; font-size:11px;">(Auto-refresh)</span>
+                </div>
+            </div>
+
+            <!-- ===== STATS ===== -->
+            <div class="analytics-stats" id="statsContainer">
+                <div class="analytics-stat">
+                    <span class="stat-icon">📦</span>
+                    <span class="stat-number green" id="statTotalItems">{{ total_items }}</span>
+                    <span class="stat-label">Total Items</span>
+                </div>
+                <div class="analytics-stat">
+                    <span class="stat-icon">❌</span>
+                    <span class="stat-number red" id="statExpiredItems">{{ expired_items }}</span>
+                    <span class="stat-label">Expired Items</span>
+                </div>
+                <div class="analytics-stat">
+                    <span class="stat-icon">⚠️</span>
+                    <span class="stat-number orange" id="statExpiringItems">{{ expiring_items }}</span>
+                    <span class="stat-label">Expiring Soon</span>
+                </div>
+                <div class="analytics-stat">
+                    <span class="stat-icon">🛒</span>
+                    <span class="stat-number blue" id="statTotalPurchases">{{ total_purchases }}</span>
+                    <span class="stat-label">Total Purchases</span>
+                </div>
+                <div class="analytics-stat">
+                    <span class="stat-icon">💰</span>
+                    <span class="stat-number purple" id="statTotalSpent">₹{{ "%.0f"|format(total_spent) }}</span>
+                    <span class="stat-label">Total Spent</span>
+                </div>
+            </div>
+
+            <!-- ===== MONEY STATS ===== -->
+            <div class="money-stats" id="moneyStatsContainer">
+                <div class="money-stat">
+                    <div class="money-icon saved">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="money-info">
+                        <div class="money-label">💰 Money Saved</div>
+                        <div class="money-amount saved" id="moneySaved">₹{{ "%.0f"|format(money_saved|default(0)) }}</div>
+                        <div class="money-sub">By consuming items before expiry</div>
+                    </div>
+                </div>
+                <div class="money-stat">
+                    <div class="money-icon wasted">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </div>
+                    <div class="money-info">
+                        <div class="money-label">💸 Money Wasted</div>
+                        <div class="money-amount wasted" id="moneyWasted">₹{{ "%.0f"|format(money_wasted|default(0)) }}</div>
+                        <div class="money-sub">From discarded expired items</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== CHARTS GRID ===== -->
+            <div class="charts-grid">
+
+                <!-- ===== 1. Waste Trend Line Chart ===== -->
+                <div class="chart-card chart-full">
+                    <div class="chart-title">
+                        <i class="fa-solid fa-chart-line"></i> Waste Trend Analysis
+                        <span class="badge">6 Months</span>
+                    </div>
+                    <div class="chart-wrapper line-chart">
+                        <canvas id="wasteTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- ===== 2. Monthly Shopping vs Waste (Bar) ===== -->
+                <div class="chart-card chart-full">
+                    <div class="chart-title">
+                        <i class="fa-solid fa-chart-bar"></i> Monthly Shopping vs Waste Tracker
+                        <span class="badge">{{ monthly_data|length if monthly_data else 0 }} months</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- ===== 3. Category Distribution (Pie) ===== -->
+                <div class="chart-card">
+                    <div class="chart-title">
+                        <i class="fa-solid fa-chart-pie"></i> Current Pantry Usage by Category
+                        <span class="badge">{{ category_data|length if category_data else 0 }} categories</span>
+                    </div>
+                    <div class="chart-wrapper pie-chart">
+                        <canvas id="categoryPieChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- ===== 4. Top Purchased Products ===== -->
+                <div class="chart-card">
+                    <div class="chart-title">
+                        <i class="fa-solid fa-arrow-up"></i> Top 5 Most Purchased Products
+                        <span class="badge">Popular</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="topPurchasedChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- ===== 5. Top Discarded Products ===== -->
+                <div class="chart-card chart-full">
+                    <div class="chart-title">
+                        <i class="fa-solid fa-arrow-down"></i> Top 5 Most Frequently Discarded Products
+                        <span class="badge">Waste</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="topDiscardedChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===== SUSTAINABILITY SCORE ===== -->
+            <div class="sustainability-score" id="sustainabilityScore">
+                {% set fresh = total_items - expired_items - expiring_items %}
+                {% set score = ((fresh / total_items * 100)|round|int) if total_items > 0 else 0 %}
+                <div class="score-circle" id="scoreCircle">
+                    {{ score }}%
+                </div>
+                <div class="score-label">🏆 Household Sustainability Score</div>
+                <div class="score-sub" id="scoreSub">
+                    {% if score >= 80 %}
+                        🌟 Excellent! You're doing great at reducing food waste!
+                    {% elif score >= 60 %}
+                        👍 Good! Keep tracking and improving your habits!
+                    {% elif score >= 40 %}
+                        📈 You can do better! Start using items before they expire.
+                    {% else %}
+                        ⚠️ Attention needed! Check your pantry regularly to reduce waste.
+                    {% endif %}
+                </div>
+                <div class="score-detail" id="scoreDetail">
+                    Based on <strong id="totalItemsDetail">{{ total_items }}</strong> items in your pantry · 
+                    <span style="color: #2E7D32;" id="freshCount">{{ fresh }} fresh</span> · 
+                    <span style="color: #F57C00;" id="expiringCount">{{ expiring_items }} expiring</span> · 
+                    <span style="color: #D32F2F;" id="expiredCount">{{ expired_items }} expired</span>
+                </div>
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-weight: 800; color: #2E7D32;" id="footerSaved">₹{{ "%.0f"|format(money_saved|default(0)) }}</div>
+                        <div style="font-size: 12px; color: #4A6A4A;">💰 Saved</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-weight: 800; color: #D32F2F;" id="footerWasted">₹{{ "%.0f"|format(money_wasted|default(0)) }}</div>
+                        <div style="font-size: 12px; color: #4A6A4A;">💸 Wasted</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-weight: 800; color: #1976D2;" id="footerPurchases">{{ total_purchases }}</div>
+                        <div style="font-size: 12px; color: #4A6A4A;">🛒 Purchases</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCRIPTS -->
+    <!-- ============================================================ -->
+    <script>
+        // ============================================================
+        // 1. STORE CHART REFERENCES GLOBALLY
+        // ============================================================
+        window.charts = {};
+
+        // ============================================================
+        // 2. INITIALIZE CHARTS
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // ---- Waste Trend Line Chart ----
+            var trendCtx = document.getElementById('wasteTrendChart').getContext('2d');
+            var monthlyDataForTrend = {{ monthly_data|tojson|safe }};
+            
+            var trendMonths = monthlyDataForTrend.length > 0 ? monthlyDataForTrend.map(function(d) { return d.month; }) : ['No Data'];
+            var wasteTrendData = monthlyDataForTrend.length > 0 ? monthlyDataForTrend.map(function(d) { return d.waste; }) : [0];
+            var shoppingTrendData = monthlyDataForTrend.length > 0 ? monthlyDataForTrend.map(function(d) { return d.shopping; }) : [0];
+
+            window.charts.wasteTrend = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: trendMonths,
+                    datasets: [
+                        {
+                            label: 'Shopping Trend',
+                            data: shoppingTrendData,
+                            borderColor: '#2E7D32',
+                            backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#2E7D32',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                        },
+                        {
+                            label: 'Waste Trend',
+                            data: wasteTrendData,
+                            borderColor: '#D32F2F',
+                            backgroundColor: 'rgba(211, 47, 47, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#D32F2F',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: { size: 12, weight: '600' },
+                                padding: 16,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ₹' + context.parsed.y;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return '₹' + value; }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.04)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // ---- Monthly Shopping vs Waste Chart ----
+            var monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+            var monthlyData = {{ monthly_data|tojson|safe }};
+            
+            var months = monthlyData.length > 0 ? monthlyData.map(function(d) { return d.month; }) : ['No Data'];
+            var shoppingAmounts = monthlyData.length > 0 ? monthlyData.map(function(d) { return d.shopping; }) : [0];
+            var wasteAmounts = monthlyData.length > 0 ? monthlyData.map(function(d) { return d.waste; }) : [0];
+
+            window.charts.monthly = new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Monthly Shopping (₹)',
+                            data: shoppingAmounts,
+                            backgroundColor: 'rgba(46, 125, 50, 0.7)',
+                            borderColor: '#2E7D32',
+                            borderWidth: 2,
+                            borderRadius: 4,
+                        },
+                        {
+                            label: 'Grocery Waste (₹)',
+                            data: wasteAmounts,
+                            backgroundColor: 'rgba(211, 47, 47, 0.7)',
+                            borderColor: '#D32F2F',
+                            borderWidth: 2,
+                            borderRadius: 4,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: { size: 12, weight: '600' },
+                                padding: 16,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return '₹' + value; }
+                            }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // ---- Category Pie Chart ----
+            var pieCtx = document.getElementById('categoryPieChart').getContext('2d');
+            var categoryData = {{ category_data|tojson|safe }};
+            
+            var colors = [
+                '#4CAF50', '#FF9800', '#2196F3', '#9C27B0', '#F44336',
+                '#00BCD4', '#795548', '#607D8B', '#E91E63', '#8BC34A',
+                '#FF5722', '#3F51B5', '#009688', '#FFC107'
+            ];
+            
+            var labels = categoryData.length > 0 ? categoryData.map(function(d) { return d[0]; }) : ['No Data'];
+            var values = categoryData.length > 0 ? categoryData.map(function(d) { return d[1]; }) : [1];
+
+            window.charts.category = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors.slice(0, labels.length),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                font: { size: 11, weight: '500' },
+                                padding: 12,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            // ---- Top Purchased Products ----
+            var purchasedCtx = document.getElementById('topPurchasedChart').getContext('2d');
+            var topPurchased = {{ top_purchased|tojson|safe }};
+            
+            var purchasedLabels = topPurchased.length > 0 ? topPurchased.map(function(d) { return d[0]; }) : ['No Data'];
+            var purchasedValues = topPurchased.length > 0 ? topPurchased.map(function(d) { return d[1]; }) : [0];
+
+            window.charts.topPurchased = new Chart(purchasedCtx, {
+                type: 'bar',
+                data: {
+                    labels: purchasedLabels,
+                    datasets: [{
+                        label: 'Times Purchased',
+                        data: purchasedValues,
+                        backgroundColor: 'rgba(46, 125, 50, 0.7)',
+                        borderColor: '#2E7D32',
+                        borderWidth: 2,
+                        borderRadius: 6,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { display: false }
+                        },
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            // ---- Top Discarded Products ----
+            var discardedCtx = document.getElementById('topDiscardedChart').getContext('2d');
+            var topDiscarded = {{ top_discarded|tojson|safe }};
+            
+            var discardedLabels = topDiscarded.length > 0 ? topDiscarded.map(function(d) { return d[0]; }) : ['No Data'];
+            var discardedValues = topDiscarded.length > 0 ? topDiscarded.map(function(d) { return d[1]; }) : [0];
+
+            window.charts.topDiscarded = new Chart(discardedCtx, {
+                type: 'bar',
+                data: {
+                    labels: discardedLabels,
+                    datasets: [{
+                        label: 'Times Discarded',
+                        data: discardedValues,
+                        backgroundColor: 'rgba(211, 47, 47, 0.7)',
+                        borderColor: '#D32F2F',
+                        borderWidth: 2,
+                        borderRadius: 6,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { display: false }
+                        },
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            // ============================================================
+            // 3. REAL-TIME ANALYTICS UPDATE - CHARTS UPDATE
+            // ============================================================
+            
+            // ---- Update UI with new data ----
+            window.updateAnalyticsUI = function(data) {
+                if (!data.success) return;
+                
+                // Update stats
+                document.getElementById('statTotalItems').textContent = data.total_items;
+                document.getElementById('statExpiredItems').textContent = data.expired_items;
+                document.getElementById('statExpiringItems').textContent = data.expiring_items;
+                document.getElementById('statTotalPurchases').textContent = data.total_purchases;
+                document.getElementById('statTotalSpent').textContent = '₹' + Math.round(data.total_spent);
+                
+                // Update money stats
+                document.getElementById('moneySaved').textContent = '₹' + Math.round(data.money_saved);
+                document.getElementById('moneyWasted').textContent = '₹' + Math.round(data.money_wasted);
+                
+                // Update sustainability score
+                document.getElementById('scoreCircle').textContent = data.sustainability_score + '%';
+                document.getElementById('totalItemsDetail').textContent = data.total_items;
+                document.getElementById('freshCount').textContent = data.fresh + ' fresh';
+                document.getElementById('expiringCount').textContent = data.expiring_items + ' expiring';
+                document.getElementById('expiredCount').textContent = data.expired_items + ' expired';
+                document.getElementById('footerSaved').textContent = '₹' + Math.round(data.money_saved);
+                document.getElementById('footerWasted').textContent = '₹' + Math.round(data.money_wasted);
+                document.getElementById('footerPurchases').textContent = data.total_purchases;
+                
+                // Update score message
+                var msg = document.getElementById('scoreSub');
+                if (data.sustainability_score >= 80) {
+                    msg.textContent = '🌟 Excellent! You\'re doing great at reducing food waste!';
+                } else if (data.sustainability_score >= 60) {
+                    msg.textContent = '👍 Good! Keep tracking and improving your habits!';
+                } else if (data.sustainability_score >= 40) {
+                    msg.textContent = '📈 You can do better! Start using items before they expire.';
+                } else {
+                    msg.textContent = '⚠️ Attention needed! Check your pantry regularly to reduce waste.';
+                }
+                
+                // Animate score circle
+                var circle = document.getElementById('scoreCircle');
+                circle.classList.remove('updated');
+                setTimeout(function() { circle.classList.add('updated'); }, 10);
+                
+                // ============================================================
+                // UPDATE ALL CHARTS WITH NEW DATA
+                // ============================================================
+                
+                // ---- Update Category Pie Chart ----
+                if (window.charts.category && data.category_data) {
+                    var catLabels = data.category_data.map(function(d) { return d[0]; });
+                    var catValues = data.category_data.map(function(d) { return d[1]; });
+                    window.charts.category.data.labels = catLabels;
+                    window.charts.category.data.datasets[0].data = catValues;
+                    window.charts.category.update();
+                }
+                
+                // ---- Update Monthly Bar Chart ----
+                if (window.charts.monthly && data.monthly_data) {
+                    var mMonths = data.monthly_data.map(function(d) { return d.month; });
+                    var mShopping = data.monthly_data.map(function(d) { return d.shopping; });
+                    var mWaste = data.monthly_data.map(function(d) { return d.waste; });
+                    window.charts.monthly.data.labels = mMonths;
+                    window.charts.monthly.data.datasets[0].data = mShopping;
+                    window.charts.monthly.data.datasets[1].data = mWaste;
+                    window.charts.monthly.update();
+                }
+                
+                // ---- Update Waste Trend Line Chart ----
+                if (window.charts.wasteTrend && data.monthly_data) {
+                    var tMonths = data.monthly_data.map(function(d) { return d.month; });
+                    var tWaste = data.monthly_data.map(function(d) { return d.waste; });
+                    var tShopping = data.monthly_data.map(function(d) { return d.shopping; });
+                    window.charts.wasteTrend.data.labels = tMonths;
+                    window.charts.wasteTrend.data.datasets[0].data = tShopping;
+                    window.charts.wasteTrend.data.datasets[1].data = tWaste;
+                    window.charts.wasteTrend.update();
+                }
+                
+                // ---- Update Top Purchased Chart ----
+                if (window.charts.topPurchased && data.top_purchased) {
+                    var pLabels = data.top_purchased.map(function(d) { return d[0]; });
+                    var pValues = data.top_purchased.map(function(d) { return d[1]; });
+                    window.charts.topPurchased.data.labels = pLabels;
+                    window.charts.topPurchased.data.datasets[0].data = pValues;
+                    window.charts.topPurchased.update();
+                }
+                
+                // ---- Update Top Discarded Chart ----
+                if (window.charts.topDiscarded && data.top_discarded) {
+                    var dLabels = data.top_discarded.map(function(d) { return d[0]; });
+                    var dValues = data.top_discarded.map(function(d) { return d[1]; });
+                    window.charts.topDiscarded.data.labels = dLabels;
+                    window.charts.topDiscarded.data.datasets[0].data = dValues;
+                    window.charts.topDiscarded.update();
+                }
+            };
+
+            // ---- Fetch and update analytics data ----
+            window.updateAnalyticsData = function() {
+                fetch('/get_analytics_data', {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data.success) {
+                        window.updateAnalyticsUI(data);
+                    }
+                })
+                .catch(function(error) {
+                    console.log('Analytics update error:', error);
+                });
+            };
+
+            // ---- Auto-refresh every 10 seconds ----
+            setInterval(window.updateAnalyticsData, 10000);
+
+            // ---- Also update when page becomes visible ----
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    window.updateAnalyticsData();
+                }
+            });
+
+            // ============================================================
+            // 4. SET ACTIVE NAV
+            // ============================================================
+            document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+                if (link.getAttribute('href') === window.location.pathname) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

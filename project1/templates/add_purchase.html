@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Purchase | PantryPulse</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-image: url('{{ url_for('static', filename='images/background.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.88);
+            z-index: 0;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        .add-purchase-container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .add-purchase-header {
+            margin-bottom: 30px;
+        }
+
+        .add-purchase-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1B2A1E;
+        }
+
+        .add-purchase-header h1 span {
+            color: #2E7D32;
+        }
+
+        .add-purchase-header p {
+            color: #4A6A4A;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* ===== FORM CARD ===== */
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .form-card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-card .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1B2A1E;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(46, 125, 50, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-card .section-title i {
+            color: #2E7D32;
+        }
+
+        /* ===== FORM GROUPS ===== */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1B2A1E;
+            margin-bottom: 6px;
+        }
+
+        .form-group label i {
+            color: #2E7D32;
+            margin-right: 8px;
+            width: 18px;
+        }
+
+        .form-group label .required {
+            color: #C62828;
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2E7D32;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.1);
+            background: white;
+        }
+
+        .form-group input::placeholder {
+            color: #A0A0A0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* ===== ITEMS SECTION ===== */
+        .items-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #F5F9F5;
+            border-radius: 12px;
+            border: 1px solid rgba(46, 125, 50, 0.1);
+        }
+
+        .items-section .items-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .items-section .items-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1B2A1E;
+        }
+
+        .items-section .items-header h3 i {
+            color: #2E7D32;
+            margin-right: 8px;
+        }
+
+        .items-section .items-header .btn-add-item {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .items-section .items-header .btn-add-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.3);
+        }
+
+        /* ===== ITEM ROW ===== */
+        .item-row {
+            display: grid;
+            grid-template-columns: 2fr 0.8fr 0.8fr 0.8fr 0.4fr;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+            background: white;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+
+        .item-row:hover {
+            border-color: #2E7D32;
+            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.08);
+        }
+
+        .item-row .item-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .item-row .item-field .field-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #4A6A4A;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .item-row .item-field .field-label i {
+            font-size: 10px;
+            margin-right: 3px;
+        }
+
+        .item-row input {
+            padding: 8px 10px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            width: 100%;
+            background: #FAFCFA;
+        }
+
+        .item-row input:focus {
+            border-color: #2E7D32;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+            background: white;
+        }
+
+        .item-row input::placeholder {
+            color: #B0B0B0;
+            font-size: 12px;
+        }
+
+        .item-row .btn-remove-item {
+            background: #FFEBEE;
+            color: #C62828;
+            border: none;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .item-row .btn-remove-item:hover {
+            background: #C62828;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            color: #4A6A4A;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            color: #2E7D32;
+            background: rgba(46, 125, 50, 0.08);
+        }
+
+        /* ===== FLASH MESSAGES ===== */
+        .flash-message {
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            animation: slideDown 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .flash-message.success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border-left: 4px solid #2E7D32;
+        }
+
+        .flash-message.error {
+            background: #FFEBEE;
+            color: #C62828;
+            border-left: 4px solid #C62828;
+        }
+
+        .flash-message .flash-icon {
+            font-size: 22px;
+        }
+
+        .flash-message .flash-close {
+            margin-left: auto;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            color: inherit;
+        }
+
+        .flash-message .flash-close:hover {
+            opacity: 1;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .form-card {
+                padding: 24px 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .item-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                padding: 12px;
+            }
+
+            .item-row .btn-remove-item {
+                grid-column: span 2;
+                margin-top: 0;
+            }
+
+            .add-purchase-header h1 {
+                font-size: 26px;
+            }
+
+            .item-row .item-field .field-label {
+                font-size: 9px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .form-card {
+                padding: 18px 14px;
+            }
+
+            .add-purchase-header h1 {
+                font-size: 22px;
+            }
+
+            .item-row {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .item-row .btn-remove-item {
+                grid-column: span 1;
+                margin-top: 0;
+            }
+
+            .items-section {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    {% include 'sidebar_nav.html' %}
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <div class="add-purchase-container">
+
+            <!-- ===== HEADER ===== -->
+            <div class="add-purchase-header">
+                <h1>✏️ <span>Add Purchase</span></h1>
+                <p>Log your grocery purchase and add items to pantry</p>
+            </div>
+
+            <!-- ===== FLASH MESSAGES ===== -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            <span class="flash-icon">
+                                {% if category == 'success' %}✅
+                                {% elif category == 'error' %}❌
+                                {% else %}ℹ️{% endif %}
+                            </span>
+                            <span>{{ message }}</span>
+                            <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- ===== FORM ===== -->
+            <div class="form-card">
+                <form method="POST" id="purchaseForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="store_name"><i class="fa-solid fa-store"></i> Store Name <span class="required">*</span></label>
+                            <input type="text" name="store_name" id="store_name" placeholder="e.g., Reliance Smart, D-Mart, Blinkit" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="purchase_date"><i class="fa-regular fa-calendar"></i> Purchase Date <span class="required">*</span></label>
+                            <input type="date" name="purchase_date" id="purchase_date" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="total_amount"><i class="fa-solid fa-indian-rupee-sign"></i> Total Amount <span class="required">*</span></label>
+                        <input type="number" name="total_amount" id="total_amount" placeholder="0.00" step="0.01" required>
+                    </div>
+
+                    <!-- ===== ITEMS SECTION ===== -->
+                    <div class="items-section">
+                        <div class="items-header">
+                            <h3><i class="fa-solid fa-box"></i> Items</h3>
+                            <button type="button" class="btn-add-item" onclick="addItemRow()">
+                                <i class="fa-solid fa-plus"></i> Add Item
+                            </button>
+                        </div>
+                        <div id="itemsContainer">
+                            <!-- First item row with labels -->
+                            <div class="item-row">
+                                <div class="item-field">
+                                    <span class="field-label"><i class="fa-solid fa-tag"></i> Product Name</span>
+                                    <input type="text" name="item_name[]" placeholder="e.g., Milk, Bread, Eggs" required>
+                                </div>
+                                <div class="item-field">
+                                    <span class="field-label"><i class="fa-solid fa-hashtag"></i> Qty</span>
+                                    <input type="number" name="item_qty[]" placeholder="1" value="1" min="1">
+                                </div>
+                                <div class="item-field">
+                                    <span class="field-label"><i class="fa-solid fa-indian-rupee-sign"></i> Price</span>
+                                    <input type="number" name="item_price[]" placeholder="₹ 0.00" step="0.01">
+                                </div>
+                                <div class="item-field">
+                                    <span class="field-label"><i class="fa-regular fa-clock"></i> Expiry Days</span>
+                                    <input type="number" name="item_expiry[]" placeholder="30" value="30" min="1">
+                                </div>
+                                <button type="button" class="btn-remove-item" onclick="removeItemRow(this)">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <i class="fa-solid fa-save"></i> Save Purchase
+                    </button>
+                </form>
+
+                <a href="{{ url_for('purchase') }}" class="btn-back">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Purchases
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================================
+        // SET DEFAULT DATE
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            var today = new Date().toISOString().split('T')[0];
+            var purchaseDate = document.getElementById('purchase_date');
+            if (purchaseDate) {
+                purchaseDate.value = today;
+            }
+
+            // Set active nav
+            document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+                if (link.getAttribute('href') === window.location.pathname) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // ============================================================
+        // ADD ITEM ROW
+        // ============================================================
+        function addItemRow() {
+            var container = document.getElementById('itemsContainer');
+            if (!container) return;
+            
+            var row = document.createElement('div');
+            row.className = 'item-row';
+            row.innerHTML = `
+                <div class="item-field">
+                    <span class="field-label"><i class="fa-solid fa-tag"></i> Product Name</span>
+                    <input type="text" name="item_name[]" placeholder="e.g., Milk, Bread, Eggs" required>
+                </div>
+                <div class="item-field">
+                    <span class="field-label"><i class="fa-solid fa-hashtag"></i> Qty</span>
+                    <input type="number" name="item_qty[]" placeholder="1" value="1" min="1">
+                </div>
+                <div class="item-field">
+                    <span class="field-label"><i class="fa-solid fa-indian-rupee-sign"></i> Price</span>
+                    <input type="number" name="item_price[]" placeholder="₹ 0.00" step="0.01">
+                </div>
+                <div class="item-field">
+                    <span class="field-label"><i class="fa-regular fa-clock"></i> Expiry Days</span>
+                    <input type="number" name="item_expiry[]" placeholder="30" value="30" min="1">
+                </div>
+                <button type="button" class="btn-remove-item" onclick="removeItemRow(this)">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            `;
+            container.appendChild(row);
+            
+            // Auto focus on the new item name input
+            var inputs = row.querySelectorAll('input');
+            if (inputs.length > 0) {
+                inputs[0].focus();
+            }
+        }
+
+        // ============================================================
+        // REMOVE ITEM ROW
+        // ============================================================
+        function removeItemRow(button) {
+            var container = document.getElementById('itemsContainer');
+            if (!container) return;
+            
+            if (container.children.length > 1) {
+                var row = button.parentElement;
+                row.style.transition = 'all 0.3s ease';
+                row.style.opacity = '0';
+                row.style.transform = 'scale(0.95)';
+                setTimeout(function() {
+                    row.remove();
+                }, 300);
+            } else {
+                alert('⚠️ You need at least one item!');
+            }
+        }
+
+        // ============================================================
+        // FORM VALIDATION
+        // ============================================================
+        document.getElementById('purchaseForm').addEventListener('submit', function(e) {
+            var itemNames = document.querySelectorAll('input[name="item_name[]"]');
+            var empty = false;
+            var emptyIndex = -1;
+            
+            itemNames.forEach(function(input, index) {
+                if (!input.value.trim()) {
+                    empty = true;
+                    emptyIndex = index;
+                }
+            });
+            
+            if (empty) {
+                e.preventDefault();
+                alert('⚠️ Please fill all item names!');
+                
+                // Focus on the empty input
+                if (emptyIndex >= 0 && itemNames[emptyIndex]) {
+                    itemNames[emptyIndex].focus();
+                    itemNames[emptyIndex].style.borderColor = '#C62828';
+                }
+                return;
+            }
+            
+            // Show loading state
+            var btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+        });
+    </script>
+
+</body>
+</html>
