@@ -6,3 +6,6 @@ eventlet==0.33.3
 reportlab
 Pillow
 pytesseract
+opencv-python-headless
+numpy
+
